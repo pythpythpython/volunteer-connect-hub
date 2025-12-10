@@ -1,0 +1,442 @@
+---
+layout: default
+title: Track Hours - VolunteerConnect Hub
+description: Log and track your volunteer hours
+---
+
+<div class="section">
+    <div class="section-header">
+        <h1 class="section-title">Track Volunteer Hours</h1>
+        <p class="section-subtitle">Log your hours, generate reports, and get certificates</p>
+    </div>
+    
+    <!-- Auth Required Notice -->
+    <div id="authRequired" class="card" style="text-align: center; padding: 48px;">
+        <span class="material-icons" style="font-size: 64px; color: var(--primary); margin-bottom: 16px;">timer</span>
+        <h2 style="margin-bottom: 16px;">Sign In to Track Hours</h2>
+        <p style="color: var(--gray-600); margin-bottom: 24px;">
+            Keep a record of all your volunteer contributions and achievements.
+        </p>
+        <button class="btn btn-primary btn-lg" onclick="signInWithGoogle()">
+            <span class="material-icons">login</span>
+            Sign In
+        </button>
+    </div>
+    
+    <!-- Hours Content (shown when authenticated) -->
+    <div id="hoursContent" class="hidden">
+        <!-- Stats Cards -->
+        <div class="stats-grid" style="margin-bottom: 24px;">
+            <div class="stat-card">
+                <div class="stat-value" id="totalHours">0</div>
+                <div class="stat-label">Total Hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="monthlyHours">0</div>
+                <div class="stat-label">This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalOrgs">0</div>
+                <div class="stat-label">Organizations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalEntries">0</div>
+                <div class="stat-label">Log Entries</div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex gap-4" style="margin-bottom: 24px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="openLogHoursModal()">
+                <span class="material-icons">add</span>
+                Log Hours
+            </button>
+            <button class="btn btn-outline" onclick="generateReport()">
+                <span class="material-icons">assessment</span>
+                Generate Report
+            </button>
+            <button class="btn btn-outline" onclick="exportHours()">
+                <span class="material-icons">download</span>
+                Export CSV
+            </button>
+        </div>
+        
+        <!-- Hours Log Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Hours Log</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-container" id="hoursTableContainer">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Organization</th>
+                                <th>Hours</th>
+                                <th>Activity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hoursTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyHours" class="hidden" style="text-align: center; padding: 32px;">
+                    <span class="material-icons" style="font-size: 48px; color: var(--gray-400);">history</span>
+                    <h3 style="margin: 16px 0 8px;">No Hours Logged Yet</h3>
+                    <p style="color: var(--gray-600);">Start tracking your volunteer contributions.</p>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="openLogHoursModal()">
+                        Log Your First Hours
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tips -->
+        <div class="alert alert-info" style="margin-top: 24px;">
+            <span class="material-icons">lightbulb</span>
+            <div>
+                <strong>Pro Tip</strong>
+                <p style="margin: 0;">Log your hours right after each volunteer session while the details are fresh!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Hours Modal -->
+<div class="modal-overlay" id="logHoursModal">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Log Volunteer Hours</h2>
+            <button class="modal-close" onclick="closeModal('logHoursModal')">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="logHoursForm">
+                <div class="form-group">
+                    <label class="form-label" for="logOrg">Organization *</label>
+                    <input type="text" class="form-input" id="logOrg" required 
+                           placeholder="e.g., Local Food Bank">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="logDate">Date *</label>
+                        <input type="date" class="form-input" id="logDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="logHours">Hours *</label>
+                        <input type="number" class="form-input" id="logHours" 
+                               min="0.25" max="24" step="0.25" required placeholder="e.g., 4">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="logActivity">Activity Type</label>
+                    <select class="form-input form-select" id="logActivity">
+                        <option value="direct_service">Direct Service</option>
+                        <option value="indirect_service">Indirect Service</option>
+                        <option value="administrative">Administrative</option>
+                        <option value="fundraising">Fundraising</option>
+                        <option value="training">Training</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="logDescription">Description *</label>
+                    <textarea class="form-input form-textarea" id="logDescription" required
+                              placeholder="What did you do? e.g., Sorted food donations and helped with distribution"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="logSupervisor">Supervisor Name (for verification)</label>
+                    <input type="text" class="form-input" id="logSupervisor" 
+                           placeholder="e.g., Jane Smith">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('logHoursModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveHoursEntry()">
+                <span class="material-icons">save</span>
+                Log Hours
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Volunteer Hours Report</h2>
+            <button class="modal-close" onclick="closeModal('reportModal')">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body" id="reportContent">
+            <!-- Generated report content -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('reportModal')">Close</button>
+            <button class="btn btn-primary" onclick="printReport()">
+                <span class="material-icons">print</span>
+                Print Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let hoursLog = [];
+
+function loadHoursLog() {
+    const saved = localStorage.getItem('volunteerHoursLog');
+    if (saved) {
+        hoursLog = JSON.parse(saved);
+    }
+    updateStats();
+    renderHoursTable();
+}
+
+function saveHoursLog() {
+    localStorage.setItem('volunteerHoursLog', JSON.stringify(hoursLog));
+}
+
+function updateStats() {
+    const total = hoursLog.reduce((sum, entry) => sum + entry.hours, 0);
+    
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const monthly = hoursLog
+        .filter(e => e.date.startsWith(thisMonth))
+        .reduce((sum, entry) => sum + entry.hours, 0);
+    
+    const orgs = new Set(hoursLog.map(e => e.organization)).size;
+    
+    document.getElementById('totalHours').textContent = total.toFixed(1);
+    document.getElementById('monthlyHours').textContent = monthly.toFixed(1);
+    document.getElementById('totalOrgs').textContent = orgs;
+    document.getElementById('totalEntries').textContent = hoursLog.length;
+}
+
+function renderHoursTable() {
+    const tbody = document.getElementById('hoursTableBody');
+    const emptyState = document.getElementById('emptyHours');
+    const tableContainer = document.getElementById('hoursTableContainer');
+    
+    if (hoursLog.length === 0) {
+        tableContainer.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    
+    tableContainer.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+    
+    // Sort by date descending
+    const sorted = [...hoursLog].sort((a, b) => b.date.localeCompare(a.date));
+    
+    tbody.innerHTML = sorted.map(entry => `
+        <tr>
+            <td>${new Date(entry.date).toLocaleDateString()}</td>
+            <td>${entry.organization}</td>
+            <td><strong>${entry.hours}</strong></td>
+            <td>${formatActivityType(entry.activityType)}</td>
+            <td>
+                <span class="badge ${entry.verified ? 'badge-success' : 'badge-warning'}">
+                    ${entry.verified ? 'Verified' : 'Pending'}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-icon" onclick="viewEntry('${entry.id}')" title="View Details">
+                    <span class="material-icons">visibility</span>
+                </button>
+                <button class="btn btn-icon" onclick="deleteEntry('${entry.id}')" title="Delete">
+                    <span class="material-icons">delete</span>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function formatActivityType(type) {
+    const types = {
+        'direct_service': 'Direct Service',
+        'indirect_service': 'Indirect Service',
+        'administrative': 'Administrative',
+        'fundraising': 'Fundraising',
+        'training': 'Training',
+        'other': 'Other'
+    };
+    return types[type] || type;
+}
+
+function openLogHoursModal() {
+    document.getElementById('logHoursModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function saveHoursEntry() {
+    const org = document.getElementById('logOrg').value;
+    const date = document.getElementById('logDate').value;
+    const hours = parseFloat(document.getElementById('logHours').value);
+    const description = document.getElementById('logDescription').value;
+    
+    if (!org || !date || !hours || !description) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    const entry = {
+        id: Date.now().toString(),
+        organization: org,
+        date: date,
+        hours: hours,
+        activityType: document.getElementById('logActivity').value,
+        description: description,
+        supervisor: document.getElementById('logSupervisor').value,
+        verified: false,
+        createdAt: new Date().toISOString()
+    };
+    
+    hoursLog.push(entry);
+    saveHoursLog();
+    updateStats();
+    renderHoursTable();
+    closeModal('logHoursModal');
+    
+    document.getElementById('logHoursForm').reset();
+    alert(`${hours} hours logged successfully!`);
+}
+
+function deleteEntry(id) {
+    if (confirm('Delete this entry?')) {
+        hoursLog = hoursLog.filter(e => e.id !== id);
+        saveHoursLog();
+        updateStats();
+        renderHoursTable();
+    }
+}
+
+function viewEntry(id) {
+    const entry = hoursLog.find(e => e.id === id);
+    if (entry) {
+        alert(`
+Organization: ${entry.organization}
+Date: ${entry.date}
+Hours: ${entry.hours}
+Activity: ${formatActivityType(entry.activityType)}
+Description: ${entry.description}
+Supervisor: ${entry.supervisor || 'Not specified'}
+        `.trim());
+    }
+}
+
+function generateReport() {
+    if (hoursLog.length === 0) {
+        alert('No hours logged yet');
+        return;
+    }
+    
+    const total = hoursLog.reduce((sum, e) => sum + e.hours, 0);
+    const orgs = {};
+    hoursLog.forEach(e => {
+        orgs[e.organization] = (orgs[e.organization] || 0) + e.hours;
+    });
+    
+    const user = getCurrentUser();
+    const reportContent = document.getElementById('reportContent');
+    
+    reportContent.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0;">Volunteer Hours Report</h2>
+            <p style="color: var(--gray-600);">${user?.displayName || 'Volunteer'}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+            <div style="background: var(--gray-50); padding: 16px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: var(--primary);">${total.toFixed(1)}</div>
+                <div style="color: var(--gray-600);">Total Hours</div>
+            </div>
+            <div style="background: var(--gray-50); padding: 16px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: var(--secondary);">${Object.keys(orgs).length}</div>
+                <div style="color: var(--gray-600);">Organizations</div>
+            </div>
+        </div>
+        
+        <h4>Hours by Organization</h4>
+        <div style="margin-bottom: 24px;">
+            ${Object.entries(orgs).map(([org, hours]) => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                    <span>${org}</span>
+                    <strong>${hours.toFixed(1)} hours</strong>
+                </div>
+            `).join('')}
+        </div>
+        
+        <p style="color: var(--gray-500); font-size: 12px; text-align: center;">
+            Generated on ${new Date().toLocaleDateString()} by VolunteerConnect Hub
+        </p>
+    `;
+    
+    document.getElementById('reportModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function printReport() {
+    window.print();
+}
+
+function exportHours() {
+    if (hoursLog.length === 0) {
+        alert('No hours to export');
+        return;
+    }
+    
+    let csv = 'Date,Organization,Hours,Activity Type,Description,Supervisor,Status\n';
+    
+    hoursLog.forEach(entry => {
+        csv += `${entry.date},"${entry.organization}",${entry.hours},${entry.activityType},"${entry.description}","${entry.supervisor || ''}",${entry.verified ? 'Verified' : 'Pending'}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'volunteer-hours.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Auth state handling
+window.addEventListener('userSignedIn', function() {
+    document.getElementById('authRequired').classList.add('hidden');
+    document.getElementById('hoursContent').classList.remove('hidden');
+    loadHoursLog();
+});
+
+window.addEventListener('userSignedOut', function() {
+    document.getElementById('authRequired').classList.remove('hidden');
+    document.getElementById('hoursContent').classList.add('hidden');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (isAuthenticated()) {
+        document.getElementById('authRequired').classList.add('hidden');
+        document.getElementById('hoursContent').classList.remove('hidden');
+        loadHoursLog();
+    }
+});
+</script>

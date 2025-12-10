@@ -22,23 +22,34 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="section stats-grid animate-slideUp">
+<!-- Personal Stats Section - Only shows when logged in -->
+<section class="section stats-grid animate-slideUp" id="userStatsSection" style="display: none;">
     <div class="stat-card">
-        <div class="stat-value" id="totalVolunteers">1,247</div>
-        <div class="stat-label">Active Volunteers</div>
+        <div class="stat-value" id="userTotalHours">0</div>
+        <div class="stat-label">Your Hours</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" id="totalHours">15,890</div>
-        <div class="stat-label">Hours Contributed</div>
+        <div class="stat-value" id="userMonthlyHours">0</div>
+        <div class="stat-label">This Month</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" id="totalOrgs">89</div>
-        <div class="stat-label">Partner Organizations</div>
+        <div class="stat-value" id="userEvents">0</div>
+        <div class="stat-label">Scheduled Events</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" id="qualityScore">100%</div>
-        <div class="stat-label">AGI Quality Score</div>
+        <div class="stat-value" id="userOrgs">0</div>
+        <div class="stat-label">Organizations</div>
+    </div>
+</section>
+
+<!-- Welcome Section - Shows when not logged in -->
+<section class="section" id="welcomeSection">
+    <div class="alert alert-info">
+        <span class="material-icons">emoji_people</span>
+        <div>
+            <strong>Welcome to VolunteerConnect Hub!</strong>
+            <p style="margin: 0;">Sign in to start tracking your volunteer hours and schedule events.</p>
+        </div>
     </div>
 </section>
 
@@ -56,7 +67,7 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
             </div>
             <h3 class="feature-title">Smart Scheduling</h3>
             <p class="feature-desc">
-                AI-optimized scheduling that syncs with Google Calendar, iCal, and Slack. 
+                Schedule volunteer events and sync with Google Calendar, iCal, or other apps. 
                 Get reminders and never miss a volunteer commitment.
             </p>
         </div>
@@ -67,8 +78,8 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
             </div>
             <h3 class="feature-title">Volunteer Outreach</h3>
             <p class="feature-desc">
-                Track who you've contacted, manage follow-ups, and grow your volunteer network 
-                with intelligent outreach tools.
+                Get guidance on finding volunteer opportunities and reaching out to 
+                organizations effectively.
             </p>
         </div>
         
@@ -78,7 +89,7 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
             </div>
             <h3 class="feature-title">Hours Tracking</h3>
             <p class="feature-desc">
-                Log volunteer hours, generate reports, and get certificates. 
+                Log volunteer hours, generate reports, and export data. 
                 Track your impact across multiple organizations.
             </p>
         </div>
@@ -89,52 +100,30 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
             </div>
             <h3 class="feature-title">AI Letter Writer</h3>
             <p class="feature-desc">
-                Generate professional letters, emails, and applications with AI. 
-                Perfect for outreach and volunteer coordination.
+                Generate application letters, thank you notes, and outreach emails. 
+                Get help crafting the perfect message.
             </p>
         </div>
         
         <div class="feature-card">
             <div class="feature-icon planning">
-                <span class="material-icons">document_scanner</span>
+                <span class="material-icons">help_outline</span>
             </div>
-            <h3 class="feature-title">Smart Form Filler</h3>
+            <h3 class="feature-title">Form Helper</h3>
             <p class="feature-desc">
-                Upload screenshots or PDFs of volunteer applications and let AI 
-                extract and fill form fields automatically.
+                Get AI-assisted answers for volunteer application questions.
+                Craft compelling responses that highlight your strengths.
             </p>
         </div>
         
         <div class="feature-card">
             <div class="feature-icon outreach">
-                <span class="material-icons">groups</span>
+                <span class="material-icons">tips_and_updates</span>
             </div>
-            <h3 class="feature-title">Team Coordination</h3>
+            <h3 class="feature-title">Volunteer Tips</h3>
             <p class="feature-desc">
-                Coordinate with fellow volunteers, share schedules, and 
-                communicate efficiently through integrated tools.
-            </p>
-        </div>
-        
-        <div class="feature-card">
-            <div class="feature-icon tracking">
-                <span class="material-icons">verified_user</span>
-            </div>
-            <h3 class="feature-title">Volunteer Vetting</h3>
-            <p class="feature-desc">
-                Screen volunteers, verify credentials, and ensure safe 
-                volunteering experiences for everyone.
-            </p>
-        </div>
-        
-        <div class="feature-card">
-            <div class="feature-icon ai">
-                <span class="material-icons">archive</span>
-            </div>
-            <h3 class="feature-title">Impact Archive</h3>
-            <p class="feature-desc">
-                Document and archive your volunteer journey. Create a 
-                portfolio of your philanthropic achievements.
+                Access guides and tips for first-time volunteers, family volunteering, 
+                and maximizing your impact.
             </p>
         </div>
     </div>
@@ -168,34 +157,40 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
                             Schedule and sync with your calendar
                         </li>
                     </ul>
-                    <button class="btn btn-primary" onclick="signInWithGoogle()">
+                    <!-- Sign up button - hidden when logged in -->
+                    <button class="btn btn-primary auth-show-logged-out" onclick="signInWithGoogle()">
                         <span class="material-icons">login</span>
-                        Sign Up as Volunteer
+                        Sign In to Get Started
                     </button>
+                    <!-- Dashboard button - shown when logged in -->
+                    <a href="{{ '/schedule' | relative_url }}" class="btn btn-primary auth-show-logged-in" style="display: none;">
+                        <span class="material-icons">dashboard</span>
+                        Go to My Schedule
+                    </a>
                 </div>
                 <div>
-                    <h3 style="margin-bottom: 16px;">For Organizations</h3>
+                    <h3 style="margin-bottom: 16px;">Quick Links</h3>
                     <ul style="list-style: none; margin-bottom: 24px;">
                         <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">check_circle</span>
-                            Post volunteer opportunities
+                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">arrow_forward</span>
+                            <a href="{{ '/opportunities' | relative_url }}">Browse Opportunities</a>
                         </li>
                         <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">check_circle</span>
-                            Manage and vet volunteers
+                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">arrow_forward</span>
+                            <a href="{{ '/ai-assistant' | relative_url }}">AI Writing Assistant</a>
                         </li>
                         <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">check_circle</span>
-                            Track volunteer contributions
+                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">arrow_forward</span>
+                            <a href="{{ '/docs' | relative_url }}">Documentation & Guides</a>
                         </li>
                         <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">check_circle</span>
-                            Coordinate events efficiently
+                            <span class="material-icons" style="color: var(--primary); font-size: 20px;">arrow_forward</span>
+                            <a href="https://www.volunteermatch.org" target="_blank">VolunteerMatch.org ↗</a>
                         </li>
                     </ul>
-                    <a href="{{ '/docs/organizations' | relative_url }}" class="btn btn-outline">
-                        <span class="material-icons">business</span>
-                        Partner With Us
+                    <a href="{{ '/docs' | relative_url }}" class="btn btn-outline">
+                        <span class="material-icons">menu_book</span>
+                        View Documentation
                     </a>
                 </div>
             </div>
@@ -208,140 +203,118 @@ description: A comprehensive volunteering planning, outreach, vetting, coordinat
     <div class="agi-board">
         <h2 class="agi-board-title">
             <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">psychology</span>
-            Powered by Advanced AGI Board
+            Powered by AGI Technology
         </h2>
         <p style="text-align: center; opacity: 0.8; margin-bottom: 24px;">
-            Our platform is powered by specialized AGI engines, each achieving 100% quality in their domain
+            Our platform is powered by specialized AGI systems optimized for volunteering tasks
         </p>
         <div class="agi-members">
             <div class="agi-member">
                 <div class="agi-member-name">PlanVoice-G4</div>
                 <div class="agi-member-role">Planning & Scheduling</div>
-                <span class="agi-member-quality">99.4% Quality</span>
-            </div>
-            <div class="agi-member">
-                <div class="agi-member-name">HarmonyJust-G4</div>
-                <div class="agi-member-role">Social Coordination</div>
-                <span class="agi-member-quality">99.3% Quality</span>
-            </div>
-            <div class="agi-member">
-                <div class="agi-member-name">VirtueArchive-G4</div>
-                <div class="agi-member-role">Vetting & Ethics</div>
-                <span class="agi-member-quality">99.3% Quality</span>
+                <span class="agi-member-quality">Scheduling</span>
             </div>
             <div class="agi-member">
                 <div class="agi-member-name">LinguaChart-G4</div>
                 <div class="agi-member-role">Communication</div>
-                <span class="agi-member-quality">99.3% Quality</span>
+                <span class="agi-member-quality">Writing</span>
             </div>
             <div class="agi-member">
                 <div class="agi-member-name">RetainGood-G4</div>
-                <div class="agi-member-role">Memory & Archiving</div>
-                <span class="agi-member-quality">99.3% Quality</span>
+                <div class="agi-member-role">Memory & Tracking</div>
+                <span class="agi-member-quality">Data</span>
             </div>
             <div class="agi-member">
                 <div class="agi-member-name">UniteSee-G4</div>
                 <div class="agi-member-role">System Integration</div>
-                <span class="agi-member-quality">99.3% Quality</span>
+                <span class="agi-member-quality">Sync</span>
             </div>
         </div>
+        <p style="text-align: center; margin-top: 24px; font-size: 14px; opacity: 0.7;">
+            <a href="{{ '/docs' | relative_url }}#agi" style="color: inherit; text-decoration: underline;">Learn more about our AGI system →</a>
+        </p>
     </div>
 </section>
 
-<!-- Testimonials Section -->
+<!-- How It Works Section -->
 <section class="section">
     <div class="section-header">
-        <h2 class="section-title">Trusted by Volunteers Worldwide</h2>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Get started in three simple steps</p>
     </div>
-    <div class="features-grid">
-        <div class="feature-card">
-            <p style="font-style: italic; margin-bottom: 16px;">
-                "VolunteerConnect made it so easy to track my volunteer hours for college applications. 
-                The AI letter writer saved me hours!"
-            </p>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="https://ui-avatars.com/api/?name=Sarah+M&background=4F46E5&color=fff" 
-                     alt="Sarah M" style="width: 40px; height: 40px; border-radius: 50%;">
-                <div>
-                    <strong>Sarah M.</strong>
-                    <div style="font-size: 0.875rem; color: var(--gray-500);">High School Student</div>
-                </div>
-            </div>
+    <div class="features-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="feature-card" style="text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; font-weight: bold;">1</div>
+            <h3 class="feature-title">Sign Up</h3>
+            <p class="feature-desc">Create your free account to get started</p>
         </div>
-        <div class="feature-card">
-            <p style="font-style: italic; margin-bottom: 16px;">
-                "As a family, we use this to coordinate our volunteer activities. 
-                The calendar sync feature is a game-changer!"
-            </p>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="https://ui-avatars.com/api/?name=The+Johnsons&background=10B981&color=fff" 
-                     alt="The Johnsons" style="width: 40px; height: 40px; border-radius: 50%;">
-                <div>
-                    <strong>The Johnson Family</strong>
-                    <div style="font-size: 0.875rem; color: var(--gray-500);">Family Volunteers</div>
-                </div>
-            </div>
+        <div class="feature-card" style="text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; font-weight: bold;">2</div>
+            <h3 class="feature-title">Add Events</h3>
+            <p class="feature-desc">Schedule your volunteer commitments</p>
         </div>
-        <div class="feature-card">
-            <p style="font-style: italic; margin-bottom: 16px;">
-                "The smart form filler feature alone has saved our organization countless hours 
-                processing volunteer applications."
-            </p>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="https://ui-avatars.com/api/?name=David+K&background=F59E0B&color=fff" 
-                     alt="David K" style="width: 40px; height: 40px; border-radius: 50%;">
-                <div>
-                    <strong>David K.</strong>
-                    <div style="font-size: 0.875rem; color: var(--gray-500);">Nonprofit Director</div>
-                </div>
-            </div>
+        <div class="feature-card" style="text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; font-weight: bold;">3</div>
+            <h3 class="feature-title">Track Impact</h3>
+            <p class="feature-desc">Log hours and see your contribution grow</p>
         </div>
     </div>
 </section>
 
 <script>
-// Animate stats on scroll
-document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateStats();
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
+// Update UI based on auth state
+function updateHomePageAuth() {
+    const isLoggedIn = isAuthenticated();
     
-    document.querySelectorAll('.stats-grid').forEach(el => observer.observe(el));
-});
-
-function animateStats() {
-    animateValue('totalVolunteers', 0, 1247, 2000);
-    animateValue('totalHours', 0, 15890, 2000);
-    animateValue('totalOrgs', 0, 89, 2000);
-}
-
-function animateValue(id, start, end, duration) {
-    const element = document.getElementById(id);
-    if (!element) return;
+    // Toggle logged in/out elements
+    document.querySelectorAll('.auth-show-logged-in').forEach(el => {
+        el.style.display = isLoggedIn ? '' : 'none';
+    });
+    document.querySelectorAll('.auth-show-logged-out').forEach(el => {
+        el.style.display = isLoggedIn ? 'none' : '';
+    });
     
-    const range = end - start;
-    const startTime = performance.now();
+    // Toggle sections
+    const userStatsSection = document.getElementById('userStatsSection');
+    const welcomeSection = document.getElementById('welcomeSection');
     
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const value = Math.floor(start + range * easeOutQuad(progress));
-        element.textContent = value.toLocaleString();
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
+    if (isLoggedIn) {
+        userStatsSection.style.display = '';
+        welcomeSection.style.display = 'none';
+        loadUserStats();
+    } else {
+        userStatsSection.style.display = 'none';
+        welcomeSection.style.display = '';
     }
-    
-    requestAnimationFrame(update);
 }
 
-function easeOutQuad(t) {
-    return t * (2 - t);
+function loadUserStats() {
+    // Load hours from localStorage
+    const hoursLog = JSON.parse(localStorage.getItem('volunteerHoursLog') || '[]');
+    const events = JSON.parse(localStorage.getItem('volunteerEvents') || '[]');
+    
+    const totalHours = hoursLog.reduce((sum, e) => sum + e.hours, 0);
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const monthlyHours = hoursLog
+        .filter(e => e.date.startsWith(thisMonth))
+        .reduce((sum, e) => sum + e.hours, 0);
+    const orgs = new Set(hoursLog.map(e => e.organization)).size;
+    const today = new Date().toISOString().split('T')[0];
+    const upcomingEvents = events.filter(e => e.date >= today).length;
+    
+    document.getElementById('userTotalHours').textContent = totalHours.toFixed(1);
+    document.getElementById('userMonthlyHours').textContent = monthlyHours.toFixed(1);
+    document.getElementById('userEvents').textContent = upcomingEvents;
+    document.getElementById('userOrgs').textContent = orgs;
 }
+
+// Listen for auth changes
+window.addEventListener('userSignedIn', updateHomePageAuth);
+window.addEventListener('userSignedOut', updateHomePageAuth);
+
+// Check initial state
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to let auth initialize
+    setTimeout(updateHomePageAuth, 100);
+});
 </script>

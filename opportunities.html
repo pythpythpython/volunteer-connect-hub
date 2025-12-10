@@ -1,0 +1,298 @@
+---
+layout: default
+title: Volunteer Opportunities - VolunteerConnect Hub
+description: Find and browse volunteer opportunities in your community
+---
+
+<div class="section">
+    <div class="section-header">
+        <h1 class="section-title">Find Volunteer Opportunities</h1>
+        <p class="section-subtitle">Browse opportunities and find the perfect fit for your skills and schedule</p>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-body">
+            <div class="flex gap-4" style="flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                    <input type="text" class="form-input" id="searchOpportunities" 
+                           placeholder="Search opportunities...">
+                </div>
+                <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
+                    <select class="form-input form-select" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="education">Education</option>
+                        <option value="environment">Environment</option>
+                        <option value="health">Health & Wellness</option>
+                        <option value="community">Community Service</option>
+                        <option value="animals">Animal Welfare</option>
+                        <option value="seniors">Senior Care</option>
+                        <option value="youth">Youth Programs</option>
+                        <option value="food">Food Security</option>
+                    </select>
+                </div>
+                <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
+                    <select class="form-input form-select" id="commitmentFilter">
+                        <option value="">Any Commitment</option>
+                        <option value="one-time">One-time</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="ongoing">Ongoing</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="searchOpportunities()">
+                    <span class="material-icons">search</span>
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Opportunities List -->
+    <div id="opportunitiesContainer">
+        <!-- Getting Started Message - Shown when not logged in -->
+        <div class="card" id="gettingStartedCard">
+            <div class="card-body" style="text-align: center; padding: 48px;">
+                <span class="material-icons" style="font-size: 64px; color: var(--primary); margin-bottom: 16px;">volunteer_activism</span>
+                <h2 style="margin-bottom: 16px;">Ready to Make a Difference?</h2>
+                <p style="color: var(--gray-600); margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    Sign in to browse personalized volunteer opportunities, save favorites, 
+                    and track your applications.
+                </p>
+                <button class="btn btn-primary btn-lg" onclick="signInWithGoogle()" data-requires-auth="false">
+                    <span class="material-icons">login</span>
+                    Sign In to Get Started
+                </button>
+                <p style="color: var(--gray-500); font-size: 14px; margin-top: 16px;">
+                    Or browse as a guest below
+                </p>
+            </div>
+        </div>
+        
+        <!-- Sample Opportunities (clearly marked as examples) -->
+        <div class="alert alert-info" style="margin-bottom: 24px;">
+            <span class="material-icons">info</span>
+            <div>
+                <strong>Example Listings</strong>
+                <p style="margin: 0;">These are example opportunity formats. Connect with local organizations to find real opportunities in your area.</p>
+            </div>
+        </div>
+        
+        <div class="features-grid" id="opportunitiesList">
+            <!-- Opportunity Card Template -->
+            <div class="feature-card opportunity-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <span class="badge badge-primary">Education</span>
+                    <span class="badge badge-success">Ongoing</span>
+                </div>
+                <h3 class="feature-title">Youth Tutoring Program</h3>
+                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
+                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
+                    Your Local Community Center
+                </p>
+                <p class="feature-desc">
+                    Help students with homework and academic skills. 
+                    Training provided. Background check required.
+                </p>
+                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
+                        2-4 hours/week
+                    </span>
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
+                        5 spots available
+                    </span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-1')">
+                    Learn More
+                </button>
+            </div>
+            
+            <div class="feature-card opportunity-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <span class="badge badge-warning">Food Security</span>
+                    <span class="badge badge-primary">Weekly</span>
+                </div>
+                <h3 class="feature-title">Food Bank Distribution</h3>
+                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
+                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
+                    Your Local Food Bank
+                </p>
+                <p class="feature-desc">
+                    Sort donations and assist with food distribution to families in need.
+                    No experience necessary.
+                </p>
+                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
+                        3-4 hours/shift
+                    </span>
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
+                        10 spots available
+                    </span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-2')">
+                    Learn More
+                </button>
+            </div>
+            
+            <div class="feature-card opportunity-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <span class="badge badge-danger">Environment</span>
+                    <span class="badge badge-warning">One-time</span>
+                </div>
+                <h3 class="feature-title">Park Cleanup Day</h3>
+                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
+                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
+                    Your Local Park
+                </p>
+                <p class="feature-desc">
+                    Join us for a community park cleanup event.
+                    Great for families and groups!
+                </p>
+                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
+                        3 hours
+                    </span>
+                    <span style="font-size: 12px; color: var(--gray-500);">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
+                        No limit
+                    </span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-3')">
+                    Learn More
+                </button>
+            </div>
+        </div>
+        
+        <!-- How to Find Real Opportunities -->
+        <div class="card" style="margin-top: 32px;">
+            <div class="card-header">
+                <h2 class="card-title">How to Find Real Opportunities</h2>
+            </div>
+            <div class="card-body">
+                <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div>
+                        <h4 style="margin-bottom: 8px;">
+                            <span class="material-icons" style="vertical-align: middle; color: var(--primary);">search</span>
+                            Search Online
+                        </h4>
+                        <p style="color: var(--gray-600); font-size: 14px;">
+                            Visit VolunteerMatch.org, Idealist.org, or your local United Way website.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 8px;">
+                            <span class="material-icons" style="vertical-align: middle; color: var(--secondary);">business</span>
+                            Contact Local Nonprofits
+                        </h4>
+                        <p style="color: var(--gray-600); font-size: 14px;">
+                            Reach out directly to organizations you're interested in supporting.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 8px;">
+                            <span class="material-icons" style="vertical-align: middle; color: var(--accent);">school</span>
+                            Check Schools & Libraries
+                        </h4>
+                        <p style="color: var(--gray-600); font-size: 14px;">
+                            Local schools and libraries often have volunteer programs.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Opportunity Details Modal -->
+<div class="modal-overlay" id="opportunityModal">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Opportunity Details</h2>
+            <button class="modal-close" onclick="closeModal('opportunityModal')">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Content loaded dynamically -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('opportunityModal')">Close</button>
+            <button class="btn btn-primary" onclick="applyToOpportunity()">
+                <span class="material-icons">send</span>
+                Express Interest
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function searchOpportunities() {
+    const search = document.getElementById('searchOpportunities').value;
+    const category = document.getElementById('categoryFilter').value;
+    const commitment = document.getElementById('commitmentFilter').value;
+    
+    // In production, this would filter/fetch real opportunities
+    console.log('Searching:', { search, category, commitment });
+    
+    // Show feedback
+    alert('Search functionality will connect to real opportunity databases. For now, browse the example listings or visit VolunteerMatch.org');
+}
+
+function showOpportunityDetails(id) {
+    const modal = document.getElementById('opportunityModal');
+    const modalBody = document.getElementById('modalBody');
+    
+    modalBody.innerHTML = `
+        <div class="alert alert-info" style="margin-bottom: 16px;">
+            <span class="material-icons">info</span>
+            <span>This is an example listing to show the format. Connect with real organizations to apply.</span>
+        </div>
+        <p>To find real volunteer opportunities:</p>
+        <ul style="margin: 16px 0; padding-left: 20px;">
+            <li>Visit <a href="https://www.volunteermatch.org" target="_blank">VolunteerMatch.org</a></li>
+            <li>Check <a href="https://www.idealist.org" target="_blank">Idealist.org</a></li>
+            <li>Contact local nonprofits directly</li>
+            <li>Ask at your school, workplace, or place of worship</li>
+        </ul>
+        <p style="color: var(--gray-600);">Once you find an opportunity, use our AI Assistant to help write your application!</p>
+    `;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function applyToOpportunity() {
+    if (isAuthenticated()) {
+        window.location.href = '{{ "/ai-assistant" | relative_url }}?action=application';
+    } else {
+        signInWithGoogle();
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Update UI based on auth state
+window.addEventListener('userSignedIn', function(e) {
+    document.getElementById('gettingStartedCard').style.display = 'none';
+});
+
+window.addEventListener('userSignedOut', function() {
+    document.getElementById('gettingStartedCard').style.display = 'block';
+});
+
+// Check initial state
+document.addEventListener('DOMContentLoaded', function() {
+    if (isAuthenticated()) {
+        document.getElementById('gettingStartedCard').style.display = 'none';
+    }
+});
+</script>

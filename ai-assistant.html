@@ -1,0 +1,494 @@
+---
+layout: default
+title: AI Assistant - VolunteerConnect Hub
+description: AI-powered tools for volunteering - letter writer, form filler, and more
+---
+
+<div class="section">
+    <div class="section-header">
+        <h1 class="section-title">AI Volunteer Assistant</h1>
+        <p class="section-subtitle">AI-powered tools to help with applications, letters, and forms</p>
+    </div>
+    
+    <!-- Tool Selection -->
+    <div class="features-grid" style="margin-bottom: 32px;">
+        <div class="feature-card tool-card" onclick="selectTool('letter')" id="tool-letter">
+            <div class="feature-icon ai">
+                <span class="material-icons">edit_note</span>
+            </div>
+            <h3 class="feature-title">Letter Writer</h3>
+            <p class="feature-desc">Generate application letters, thank you notes, and outreach emails</p>
+        </div>
+        
+        <div class="feature-card tool-card" onclick="selectTool('form')" id="tool-form">
+            <div class="feature-icon planning">
+                <span class="material-icons">description</span>
+            </div>
+            <h3 class="feature-title">Form Helper</h3>
+            <p class="feature-desc">Get help filling out volunteer applications and questionnaires</p>
+        </div>
+        
+        <div class="feature-card tool-card" onclick="selectTool('tips')" id="tool-tips">
+            <div class="feature-icon outreach">
+                <span class="material-icons">tips_and_updates</span>
+            </div>
+            <h3 class="feature-title">Volunteer Tips</h3>
+            <p class="feature-desc">Get advice on finding opportunities and making an impact</p>
+        </div>
+    </div>
+    
+    <!-- Letter Writer Tool -->
+    <div id="letterTool" class="card tool-content hidden">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-icons" style="vertical-align: middle;">edit_note</span>
+                AI Letter Writer
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label class="form-label">Letter Type</label>
+                <select class="form-input form-select" id="letterType" onchange="updateLetterPlaceholder()">
+                    <option value="application">Volunteer Application</option>
+                    <option value="thankyou">Thank You Letter</option>
+                    <option value="outreach">Outreach Email</option>
+                    <option value="followup">Follow-up Message</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Name *</label>
+                <input type="text" class="form-input" id="letterSenderName" placeholder="Your full name">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Organization Name *</label>
+                <input type="text" class="form-input" id="letterOrg" placeholder="e.g., Local Food Bank">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Position/Role</label>
+                <input type="text" class="form-input" id="letterRole" placeholder="e.g., Food Distribution Volunteer">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Reason/Motivation</label>
+                <textarea class="form-input form-textarea" id="letterReason" 
+                          placeholder="Why do you want to volunteer? What motivates you?"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Relevant Experience (optional)</label>
+                <textarea class="form-input form-textarea" id="letterExperience" 
+                          placeholder="Any relevant volunteer or work experience..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Availability</label>
+                <input type="text" class="form-input" id="letterAvailability" 
+                       placeholder="e.g., Weekends, 4 hours per week">
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateLetter()">
+                <span class="material-icons">auto_awesome</span>
+                Generate Letter
+            </button>
+            
+            <!-- Generated Letter Output -->
+            <div id="letterOutput" class="hidden" style="margin-top: 24px;">
+                <div class="form-group">
+                    <label class="form-label">Generated Letter</label>
+                    <textarea class="form-input form-textarea" id="letterResult" 
+                              style="min-height: 300px; font-family: inherit;"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button class="btn btn-outline" onclick="copyLetter()">
+                        <span class="material-icons">content_copy</span>
+                        Copy to Clipboard
+                    </button>
+                    <button class="btn btn-outline" onclick="regenerateLetter()">
+                        <span class="material-icons">refresh</span>
+                        Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Form Helper Tool -->
+    <div id="formTool" class="card tool-content hidden">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-icons" style="vertical-align: middle;">description</span>
+                Form Helper
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info" style="margin-bottom: 24px;">
+                <span class="material-icons">info</span>
+                <div>
+                    <strong>How to Use</strong>
+                    <p style="margin: 0;">Enter a question from a volunteer application, and we'll help you craft a great answer.</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Application Question</label>
+                <textarea class="form-input form-textarea" id="formQuestion" 
+                          placeholder="e.g., Why do you want to volunteer with our organization?"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Context (optional)</label>
+                <input type="text" class="form-input" id="formContext" 
+                       placeholder="e.g., Youth tutoring program at community center">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Background (helps personalize the answer)</label>
+                <textarea class="form-input form-textarea" id="formBackground" 
+                          placeholder="e.g., I'm a college student studying education, I've tutored before..."></textarea>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateFormAnswer()">
+                <span class="material-icons">auto_awesome</span>
+                Generate Answer
+            </button>
+            
+            <!-- Generated Answer Output -->
+            <div id="formOutput" class="hidden" style="margin-top: 24px;">
+                <div class="form-group">
+                    <label class="form-label">Suggested Answer</label>
+                    <textarea class="form-input form-textarea" id="formResult" 
+                              style="min-height: 150px;"></textarea>
+                </div>
+                <button class="btn btn-outline" onclick="copyFormAnswer()">
+                    <span class="material-icons">content_copy</span>
+                    Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Volunteer Tips Tool -->
+    <div id="tipsTool" class="card tool-content hidden">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-icons" style="vertical-align: middle;">tips_and_updates</span>
+                Volunteer Tips & Advice
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label class="form-label">What do you need help with?</label>
+                <select class="form-input form-select" id="tipCategory" onchange="showTips()">
+                    <option value="">Select a topic...</option>
+                    <option value="finding">Finding Volunteer Opportunities</option>
+                    <option value="first-time">First-Time Volunteering</option>
+                    <option value="commitment">Managing Time Commitment</option>
+                    <option value="skills">Skills-Based Volunteering</option>
+                    <option value="family">Family Volunteering</option>
+                    <option value="impact">Maximizing Your Impact</option>
+                </select>
+            </div>
+            
+            <div id="tipsContent" style="margin-top: 24px;">
+                <!-- Tips loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-card {
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: 2px solid transparent;
+}
+
+.tool-card:hover {
+    border-color: var(--primary);
+}
+
+.tool-card.active {
+    border-color: var(--primary);
+    background: rgba(79, 70, 229, 0.05);
+}
+
+.tool-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+let currentTool = null;
+
+function selectTool(tool) {
+    // Update card states
+    document.querySelectorAll('.tool-card').forEach(card => card.classList.remove('active'));
+    document.getElementById('tool-' + tool).classList.add('active');
+    
+    // Show selected tool
+    document.querySelectorAll('.tool-content').forEach(content => content.classList.add('hidden'));
+    document.getElementById(tool + 'Tool').classList.remove('hidden');
+    
+    currentTool = tool;
+}
+
+function generateLetter() {
+    const type = document.getElementById('letterType').value;
+    const name = document.getElementById('letterSenderName').value || '[Your Name]';
+    const org = document.getElementById('letterOrg').value || '[Organization]';
+    const role = document.getElementById('letterRole').value || 'volunteer';
+    const reason = document.getElementById('letterReason').value;
+    const experience = document.getElementById('letterExperience').value;
+    const availability = document.getElementById('letterAvailability').value || 'flexible schedule';
+    
+    let letter = '';
+    
+    switch(type) {
+        case 'application':
+            letter = generateApplicationLetter(name, org, role, reason, experience, availability);
+            break;
+        case 'thankyou':
+            letter = generateThankYouLetter(name, org, reason);
+            break;
+        case 'outreach':
+            letter = generateOutreachLetter(name, org, reason);
+            break;
+        case 'followup':
+            letter = generateFollowUpLetter(name, org);
+            break;
+    }
+    
+    document.getElementById('letterResult').value = letter;
+    document.getElementById('letterOutput').classList.remove('hidden');
+}
+
+function generateApplicationLetter(name, org, role, reason, experience, availability) {
+    return `Dear Volunteer Coordinator,
+
+I am writing to express my interest in volunteering as a ${role} with ${org}. ${reason || 'I am passionate about making a positive impact in my community and believe that volunteering with your organization would be a meaningful way to contribute.'}
+
+${experience ? `I have relevant experience that I believe would be valuable:\n${experience}\n` : ''}
+I am available ${availability} and am committed to being a reliable and dedicated volunteer.
+
+${experience ? '' : 'While I may be new to volunteering, I am eager to learn and contribute in any way I can.'}
+
+Thank you for considering my application. I would welcome the opportunity to discuss how I can contribute to your mission.
+
+Sincerely,
+${name}`;
+}
+
+function generateThankYouLetter(name, org, reason) {
+    return `Dear Team,
+
+I wanted to take a moment to express my sincere gratitude for the opportunity to volunteer with ${org}.
+
+${reason || 'The experience has been incredibly rewarding, and I have learned so much from working alongside your dedicated team and fellow volunteers.'}
+
+Thank you for your guidance and for the important work you do in our community.
+
+With appreciation,
+${name}`;
+}
+
+function generateOutreachLetter(name, org, reason) {
+    return `Subject: Volunteer Opportunity Inquiry
+
+Hello,
+
+I am reaching out to learn more about volunteer opportunities with ${org}. ${reason || 'I am passionate about giving back to my community and believe your organization\'s mission aligns with my values.'}
+
+I would love to learn more about:
+- Current volunteer needs
+- Time commitment expectations
+- Any upcoming volunteer orientations
+
+Please let me know how I can get involved.
+
+Best regards,
+${name}`;
+}
+
+function generateFollowUpLetter(name, org) {
+    return `Dear Volunteer Coordinator,
+
+I hope this message finds you well. I am following up on my recent volunteer application/inquiry with ${org}.
+
+I remain very interested in contributing to your organization and would be grateful for any updates on my application status or next steps.
+
+Please let me know if there is any additional information I can provide.
+
+Thank you for your time.
+
+Best regards,
+${name}`;
+}
+
+function copyLetter() {
+    const letter = document.getElementById('letterResult');
+    letter.select();
+    document.execCommand('copy');
+    alert('Letter copied to clipboard!');
+}
+
+function regenerateLetter() {
+    generateLetter();
+}
+
+function generateFormAnswer() {
+    const question = document.getElementById('formQuestion').value;
+    const context = document.getElementById('formContext').value;
+    const background = document.getElementById('formBackground').value;
+    
+    if (!question) {
+        alert('Please enter a question');
+        return;
+    }
+    
+    let answer = generateContextualAnswer(question, context, background);
+    
+    document.getElementById('formResult').value = answer;
+    document.getElementById('formOutput').classList.remove('hidden');
+}
+
+function generateContextualAnswer(question, context, background) {
+    const q = question.toLowerCase();
+    
+    if (q.includes('why') && q.includes('volunteer')) {
+        return `${background ? `As ${background}, ` : ''}I am passionate about making a meaningful difference in my community. ${context ? `${context} resonates with me because ` : ''}I believe that volunteering is a powerful way to connect with others, develop new skills, and contribute to causes I care about. I am committed to being reliable, enthusiastic, and ready to learn.`;
+    }
+    
+    if (q.includes('skills') || q.includes('bring')) {
+        return `I bring ${background || 'enthusiasm, reliability, and a willingness to learn'}. I am a strong communicator, work well in teams, and am committed to following through on my responsibilities. ${context ? `For ${context}, I would be dedicated to ` : 'I would be dedicated to '}making a positive contribution while also growing personally.`;
+    }
+    
+    if (q.includes('availability') || q.includes('commitment')) {
+        return `I am available to volunteer on a regular basis and understand the importance of consistent commitment. I will communicate proactively about any scheduling conflicts and ensure my responsibilities are covered. I am flexible and willing to adapt to the organization's needs.`;
+    }
+    
+    if (q.includes('experience')) {
+        return background || `While I may not have extensive formal volunteer experience, I am eager to learn and contribute. I have demonstrated reliability and dedication in my work and personal commitments, and I am excited to bring that same energy to volunteering.`;
+    }
+    
+    // Generic response
+    return `${background ? background + '. ' : ''}I am committed to being a dedicated, reliable volunteer. ${context ? `In the context of ${context}, ` : ''}I believe I can make a meaningful contribution while also growing personally and professionally.`;
+}
+
+function copyFormAnswer() {
+    const answer = document.getElementById('formResult');
+    answer.select();
+    document.execCommand('copy');
+    alert('Answer copied to clipboard!');
+}
+
+function showTips() {
+    const category = document.getElementById('tipCategory').value;
+    const container = document.getElementById('tipsContent');
+    
+    if (!category) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const tips = {
+        'finding': {
+            title: 'Finding Volunteer Opportunities',
+            tips: [
+                'Start with your interests - volunteering is more sustainable when you care about the cause',
+                'Check VolunteerMatch.org, Idealist.org, or your local United Way',
+                'Ask at your school, workplace, or place of worship',
+                'Contact local nonprofits directly - many don\'t advertise all their opportunities',
+                'Look for virtual volunteering options if you have limited time or mobility',
+                'Consider skills-based volunteering where you can use your professional expertise'
+            ]
+        },
+        'first-time': {
+            title: 'First-Time Volunteering Tips',
+            tips: [
+                'Start with a one-time event to test the waters',
+                'Arrive early and introduce yourself to the coordinator',
+                'Ask questions if you\'re unsure about anything',
+                'Be flexible and willing to do whatever is needed',
+                'Bring appropriate clothing and supplies as requested',
+                'Follow up afterward to express your interest in continuing'
+            ]
+        },
+        'commitment': {
+            title: 'Managing Your Time Commitment',
+            tips: [
+                'Be honest about how much time you can realistically give',
+                'Start small - it\'s better to under-promise and over-deliver',
+                'Use a calendar to block out your volunteer time',
+                'Communicate early if you need to miss a shift',
+                'Look for flexible opportunities if your schedule varies',
+                'Remember quality over quantity - consistent hours matter more than sporadic bursts'
+            ]
+        },
+        'skills': {
+            title: 'Skills-Based Volunteering',
+            tips: [
+                'Identify your professional skills that could help nonprofits',
+                'Look for pro bono opportunities in your field',
+                'Offer to help with specific projects rather than ongoing commitments',
+                'Consider board service if you have leadership experience',
+                'Teach or mentor in your area of expertise',
+                'Help with technology, marketing, or administrative tasks'
+            ]
+        },
+        'family': {
+            title: 'Family Volunteering',
+            tips: [
+                'Look for age-appropriate opportunities for all family members',
+                'Start with short, hands-on activities',
+                'Discuss the cause and impact with your children',
+                'Make it a regular family tradition',
+                'Let kids have input on which causes to support',
+                'Consider virtual options for families with young children'
+            ]
+        },
+        'impact': {
+            title: 'Maximizing Your Impact',
+            tips: [
+                'Commit to regular, consistent volunteering',
+                'Build relationships with the organization and fellow volunteers',
+                'Bring skills and ideas, not just your time',
+                'Recruit friends and family to multiply your impact',
+                'Provide feedback to help the organization improve',
+                'Stay for the long term - your institutional knowledge is valuable'
+            ]
+        }
+    };
+    
+    const data = tips[category];
+    
+    container.innerHTML = `
+        <h3>${data.title}</h3>
+        <ul style="margin-top: 16px; padding-left: 20px;">
+            ${data.tips.map(tip => `<li style="margin-bottom: 12px; line-height: 1.6;">${tip}</li>`).join('')}
+        </ul>
+    `;
+}
+
+// Auto-select tool from URL parameter
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    
+    if (action === 'application') {
+        selectTool('letter');
+    } else if (action === 'form') {
+        selectTool('form');
+    } else {
+        // Show letter tool by default
+        selectTool('letter');
+    }
+});
+</script>

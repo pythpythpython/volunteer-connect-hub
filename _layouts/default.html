@@ -29,12 +29,12 @@
             </a>
             
             <div class="nav-menu" id="navMenu">
-                <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
-                <a href="{{ '/opportunities' | relative_url }}" class="nav-link">Opportunities</a>
-                <a href="{{ '/schedule' | relative_url }}" class="nav-link">My Schedule</a>
-                <a href="{{ '/tracking' | relative_url }}" class="nav-link">Track Hours</a>
-                <a href="{{ '/ai-assistant' | relative_url }}" class="nav-link">AI Assistant</a>
-                <a href="{{ '/docs/' | relative_url }}" class="nav-link">Docs</a>
+                <a href="{{ '/' | relative_url }}" class="nav-link {% if page.url == '/' %}active{% endif %}">Home</a>
+                <a href="{{ '/opportunities.html' | relative_url }}" class="nav-link {% if page.url contains 'opportunities' %}active{% endif %}">Opportunities</a>
+                <a href="{{ '/schedule.html' | relative_url }}" class="nav-link {% if page.url contains 'schedule' %}active{% endif %}">My Schedule</a>
+                <a href="{{ '/tracking.html' | relative_url }}" class="nav-link {% if page.url contains 'tracking' %}active{% endif %}">Track Hours</a>
+                <a href="{{ '/ai-assistant.html' | relative_url }}" class="nav-link {% if page.url contains 'ai-assistant' %}active{% endif %}">AI Assistant</a>
+                <a href="{{ '/docs/' | relative_url }}" class="nav-link {% if page.url contains 'docs' %}active{% endif %}">Docs</a>
             </div>
             
             <div class="nav-auth" id="authContainer">
@@ -49,7 +49,7 @@
                 </div>
             </div>
             
-            <button class="nav-toggle" id="navToggle">
+            <button class="nav-toggle" id="navToggle" onclick="toggleMobileMenu()">
                 <span class="material-icons">menu</span>
             </button>
         </div>
@@ -70,39 +70,56 @@
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="{{ '/opportunities' | relative_url }}">Find Opportunities</a></li>
-                    <li><a href="{{ '/schedule' | relative_url }}">My Schedule</a></li>
-                    <li><a href="{{ '/tracking' | relative_url }}">Track Hours</a></li>
-                    <li><a href="{{ '/ai-assistant' | relative_url }}">AI Assistant</a></li>
+                    <li><a href="{{ '/opportunities.html' | relative_url }}">Find Opportunities</a></li>
+                    <li><a href="{{ '/schedule.html' | relative_url }}">My Schedule</a></li>
+                    <li><a href="{{ '/tracking.html' | relative_url }}">Track Hours</a></li>
+                    <li><a href="{{ '/ai-assistant.html' | relative_url }}">AI Assistant</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>Features</h4>
+                <h4>AI Tools</h4>
                 <ul>
-                    <li><a href="{{ '/modules/letter-writer' | relative_url }}">AI Letter Writer</a></li>
-                    <li><a href="{{ '/modules/form-filler' | relative_url }}">Smart Form Filler</a></li>
-                    <li><a href="{{ '/modules/calendar' | relative_url }}">Calendar Integration</a></li>
-                    <li><a href="{{ '/modules/outreach' | relative_url }}">Outreach Tools</a></li>
+                    <li><a href="{{ '/ai-assistant.html' | relative_url }}?tool=letter">Letter Writer</a></li>
+                    <li><a href="{{ '/ai-assistant.html' | relative_url }}?tool=form">Form Helper</a></li>
+                    <li><a href="{{ '/ai-assistant.html' | relative_url }}?tool=tips">Volunteer Tips</a></li>
+                    <li><a href="{{ '/schedule.html' | relative_url }}">Calendar Export</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="{{ '/docs/' | relative_url }}">Documentation</a></li>
-                    <li><a href="{{ '/docs/training' | relative_url }}">Training Guides</a></li>
-                    <li><a href="{{ '/docs/api' | relative_url }}">API Reference</a></li>
-                    <li><a href="https://github.com/pythpythpython/volunteer-connect-hub" target="_blank">GitHub</a></li>
+                    <li><a href="https://www.volunteermatch.org" target="_blank">VolunteerMatch ↗</a></li>
+                    <li><a href="https://www.idealist.org" target="_blank">Idealist ↗</a></li>
+                    <li><a href="https://github.com/pythpythpython/volunteer-connect-hub" target="_blank">GitHub ↗</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; {{ 'now' | date: "%Y" }} VolunteerConnect Hub. Built with AI-powered AGI boards.</p>
-            <p class="footer-agi">Powered by: PlanVoice-G4, HarmonyJust-G4, VirtueArchive-G4, LinguaChart-G4, RetainGood-G4, UniteSee-G4</p>
+            <p>&copy; {{ 'now' | date: "%Y" }} VolunteerConnect Hub. Open source project.</p>
+            <p class="footer-agi">Powered by AGI Technology</p>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script src="{{ '/assets/js/app.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/auth.js' | relative_url }}"></script>
+    
+    <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+        const menu = document.getElementById('navMenu');
+        menu.classList.toggle('active');
+    }
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('navMenu');
+        const toggle = document.getElementById('navToggle');
+        if (menu && !menu.contains(e.target) && !toggle.contains(e.target)) {
+            menu.classList.remove('active');
+        }
+    });
+    </script>
 </body>
 </html>

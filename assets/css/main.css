@@ -147,6 +147,11 @@ body {
     color: var(--primary);
 }
 
+.nav-link.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
 .nav-auth {
     display: flex;
     align-items: center;
@@ -817,6 +822,17 @@ body {
     to { 
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 
