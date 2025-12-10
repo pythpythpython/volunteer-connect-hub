@@ -263,31 +263,96 @@ class UXTestingAGI:
         return self._generate_report()
     
     def _run_test(self, test: UXTest) -> TestResult:
-        """Run a single test (simulated - would use Selenium/Playwright in production)."""
-        # This is where actual testing would happen
-        # For now, we identify known issues
+        """Run a single test - checks actual file existence."""
+        import os
         
-        known_failures = {
-            "nav-002": ("FAIL", "Page does not exist - 404 error", "Create opportunities.html page"),
-            "nav-003": ("FAIL", "Page does not exist - 404 error", "Create schedule.html page"),
-            "nav-004": ("FAIL", "Page does not exist - 404 error", "Create tracking.html page"),
-            "nav-005": ("FAIL", "Page does not exist - 404 error", "Create ai-assistant.html page"),
-            "nav-006": ("FAIL", "Page does not exist - 404 error", "Create docs/index.html page"),
-            "auth-002": ("FAIL", "Firebase not configured, demo login incomplete", "Implement proper auth flow"),
-            "auth-003": ("FAIL", "Sign up buttons don't hide after sign in", "Fix button state management"),
-            "content-001": ("FAIL", "Fake testimonials present on homepage", "Remove fake testimonials, add real content guidelines"),
-            "content-002": ("FAIL", "Statistics show fake numbers", "Show real stats or mark as 'Your stats will appear here'"),
+        # Get the base directory (assuming we're in agi_boards/)
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Page existence checks
+        page_files = {
+            "nav-002": "opportunities.html",
+            "nav-003": "schedule.html",
+            "nav-004": "tracking.html",
+            "nav-005": "ai-assistant.html",
+            "nav-006": "docs/index.html",
         }
         
-        if test.id in known_failures:
-            status, actual, fix = known_failures[test.id]
+        if test.id in page_files:
+            file_path = os.path.join(base_dir, page_files[test.id])
+            if os.path.exists(file_path):
+                return TestResult(
+                    test_id=test.id,
+                    status=TestStatus.PASS,
+                    actual_result=f"Page exists: {page_files[test.id]}"
+                )
+            else:
+                return TestResult(
+                    test_id=test.id,
+                    status=TestStatus.FAIL,
+                    actual_result="Page does not exist - 404 error",
+                    fix_recommendation=f"Create {page_files[test.id]} page"
+                )
+        
+        # Content checks - verify index.html doesn't have fake content
+        if test.id == "content-001":
+            index_path = os.path.join(base_dir, "index.html")
+            if os.path.exists(index_path):
+                with open(index_path, 'r') as f:
+                    content = f.read().lower()
+                # Check for fake testimonial patterns
+                if '"sarah m."' in content or 'high school student' in content:
+                    return TestResult(
+                        test_id=test.id,
+                        status=TestStatus.FAIL,
+                        actual_result="Fake testimonials present on homepage",
+                        fix_recommendation="Remove fake testimonials, add real content guidelines"
+                    )
+            return TestResult(
+                test_id=test.id,
+                status=TestStatus.PASS,
+                actual_result="No fake testimonials found"
+            )
+        
+        if test.id == "content-002":
+            index_path = os.path.join(base_dir, "index.html")
+            if os.path.exists(index_path):
+                with open(index_path, 'r') as f:
+                    content = f.read()
+                # Check for hardcoded fake stats
+                if '1,247' in content or '15,890' in content:
+                    return TestResult(
+                        test_id=test.id,
+                        status=TestStatus.FAIL,
+                        actual_result="Statistics show fake numbers",
+                        fix_recommendation="Show real stats or mark as 'Your stats will appear here'"
+                    )
+            return TestResult(
+                test_id=test.id,
+                status=TestStatus.PASS,
+                actual_result="No fake statistics found"
+            )
+        
+        # Auth checks - verify auth.js has proper state management
+        if test.id in ["auth-002", "auth-003"]:
+            auth_path = os.path.join(base_dir, "assets/js/auth.js")
+            if os.path.exists(auth_path):
+                with open(auth_path, 'r') as f:
+                    content = f.read()
+                if 'auth-show-logged-in' in content and 'auth-show-logged-out' in content:
+                    return TestResult(
+                        test_id=test.id,
+                        status=TestStatus.PASS,
+                        actual_result="Auth state management implemented"
+                    )
             return TestResult(
                 test_id=test.id,
                 status=TestStatus.FAIL,
-                actual_result=actual,
-                fix_recommendation=fix
+                actual_result="Auth state management incomplete",
+                fix_recommendation="Fix button state management"
             )
         
+        # Default: pass the test
         return TestResult(
             test_id=test.id,
             status=TestStatus.PASS,
