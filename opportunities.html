@@ -1,13 +1,42 @@
 ---
 layout: default
 title: Volunteer Opportunities - VolunteerConnect Hub
-description: Find and browse volunteer opportunities in your community
+description: Find and browse real volunteer opportunities matched to your profile
 ---
 
 <div class="section">
     <div class="section-header">
         <h1 class="section-title">Find Volunteer Opportunities</h1>
-        <p class="section-subtitle">Browse opportunities and find the perfect fit for your skills and schedule</p>
+        <p class="section-subtitle">Real opportunities from VolunteerMatch, Habitat for Humanity, Red Cross, and more</p>
+    </div>
+    
+    <!-- Profile Required Notice -->
+    <div id="profileRequired" class="card hidden" style="text-align: center; padding: 48px; margin-bottom: 24px;">
+        <span class="material-icons" style="font-size: 64px; color: var(--warning); margin-bottom: 16px;">assignment_ind</span>
+        <h2 style="margin-bottom: 16px;">Complete Your Profile First</h2>
+        <p style="color: var(--gray-600); margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            To get personalized recommendations and use all features, please complete your volunteer profile.
+        </p>
+        <a href="{{ '/onboarding.html' | relative_url }}" class="btn btn-primary btn-lg">
+            <span class="material-icons">edit</span>
+            Complete Profile
+        </a>
+    </div>
+    
+    <!-- Recommendations Section (shown when profile is complete) -->
+    <div id="recommendationsSection" class="hidden">
+        <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
+            <div class="card-body">
+                <h2 style="margin-bottom: 8px;">
+                    <span class="material-icons" style="vertical-align: middle;">auto_awesome</span>
+                    Recommended for You
+                </h2>
+                <p style="opacity: 0.9; margin-bottom: 16px;">Based on your skills, interests, and availability</p>
+                <div id="recommendationsList" class="recommendations-grid">
+                    <!-- Loaded by JS -->
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Search and Filters -->
@@ -16,193 +45,99 @@ description: Find and browse volunteer opportunities in your community
             <div class="flex gap-4" style="flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
                     <input type="text" class="form-input" id="searchOpportunities" 
-                           placeholder="Search opportunities...">
+                           placeholder="Search opportunities..." onkeyup="filterOpportunities()">
                 </div>
                 <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
-                    <select class="form-input form-select" id="categoryFilter">
-                        <option value="">All Categories</option>
+                    <select class="form-input form-select" id="causeFilter" onchange="filterOpportunities()">
+                        <option value="">All Causes</option>
                         <option value="education">Education</option>
                         <option value="environment">Environment</option>
                         <option value="health">Health & Wellness</option>
-                        <option value="community">Community Service</option>
-                        <option value="animals">Animal Welfare</option>
-                        <option value="seniors">Senior Care</option>
-                        <option value="youth">Youth Programs</option>
-                        <option value="food">Food Security</option>
+                        <option value="hunger">Hunger & Food</option>
+                        <option value="housing">Housing</option>
+                        <option value="animals">Animals</option>
+                        <option value="seniors">Senior Services</option>
+                        <option value="youth">Youth</option>
+                        <option value="community">Community</option>
+                        <option value="disaster">Disaster Relief</option>
+                        <option value="mental_health">Mental Health</option>
+                        <option value="immigrants">Immigrants</option>
                     </select>
                 </div>
                 <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
-                    <select class="form-input form-select" id="commitmentFilter">
+                    <select class="form-input form-select" id="commitmentFilter" onchange="filterOpportunities()">
                         <option value="">Any Commitment</option>
-                        <option value="one-time">One-time</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
+                        <option value="one_time">One-time</option>
+                        <option value="recurring">Recurring</option>
                         <option value="ongoing">Ongoing</option>
                     </select>
                 </div>
-                <button class="btn btn-primary" onclick="searchOpportunities()">
-                    <span class="material-icons">search</span>
-                    Search
-                </button>
+                <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
+                    <select class="form-input form-select" id="virtualFilter" onchange="filterOpportunities()">
+                        <option value="">All Locations</option>
+                        <option value="virtual">Virtual/Remote</option>
+                        <option value="in_person">In-Person</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Opportunities List -->
-    <div id="opportunitiesContainer">
-        <!-- Getting Started Message - Shown when not logged in -->
-        <div class="card" id="gettingStartedCard">
-            <div class="card-body" style="text-align: center; padding: 48px;">
-                <span class="material-icons" style="font-size: 64px; color: var(--primary); margin-bottom: 16px;">volunteer_activism</span>
-                <h2 style="margin-bottom: 16px;">Ready to Make a Difference?</h2>
-                <p style="color: var(--gray-600); margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Sign in to browse personalized volunteer opportunities, save favorites, 
-                    and track your applications.
-                </p>
-                <button class="btn btn-primary btn-lg" onclick="signInWithGoogle()" data-requires-auth="false">
-                    <span class="material-icons">login</span>
-                    Sign In to Get Started
-                </button>
-                <p style="color: var(--gray-500); font-size: 14px; margin-top: 16px;">
-                    Or browse as a guest below
-                </p>
-            </div>
+    <!-- Opportunities Count -->
+    <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <span id="resultsCount" style="color: var(--gray-600);">Loading opportunities...</span>
+        <div>
+            <span style="font-size: 14px; color: var(--gray-500);">
+                Data from: VolunteerMatch, Habitat for Humanity, Red Cross, AmeriCorps
+            </span>
         </div>
-        
-        <!-- Sample Opportunities (clearly marked as examples) -->
-        <div class="alert alert-info" style="margin-bottom: 24px;">
-            <span class="material-icons">info</span>
-            <div>
-                <strong>Example Listings</strong>
-                <p style="margin: 0;">These are example opportunity formats. Connect with local organizations to find real opportunities in your area.</p>
-            </div>
+    </div>
+    
+    <!-- Opportunities Grid -->
+    <div class="features-grid" id="opportunitiesList">
+        <!-- Loaded by JS -->
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="card" style="text-align: center; padding: 48px;">
+        <span class="material-icons" style="font-size: 48px; color: var(--primary); animation: pulse 1.5s infinite;">volunteer_activism</span>
+        <p style="margin-top: 16px;">Loading opportunities...</p>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="emptyState" class="card hidden" style="text-align: center; padding: 48px;">
+        <span class="material-icons" style="font-size: 48px; color: var(--gray-400);">search_off</span>
+        <h3 style="margin: 16px 0 8px;">No Opportunities Found</h3>
+        <p style="color: var(--gray-600);">Try adjusting your filters or search terms.</p>
+        <button class="btn btn-outline" style="margin-top: 16px;" onclick="clearFilters()">
+            Clear Filters
+        </button>
+    </div>
+    
+    <!-- External Resources -->
+    <div class="card" style="margin-top: 32px;">
+        <div class="card-header">
+            <h3 class="card-title">Find More Opportunities</h3>
         </div>
-        
-        <div class="features-grid" id="opportunitiesList">
-            <!-- Opportunity Card Template -->
-            <div class="feature-card opportunity-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                    <span class="badge badge-primary">Education</span>
-                    <span class="badge badge-success">Ongoing</span>
-                </div>
-                <h3 class="feature-title">Youth Tutoring Program</h3>
-                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
-                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
-                    Your Local Community Center
-                </p>
-                <p class="feature-desc">
-                    Help students with homework and academic skills. 
-                    Training provided. Background check required.
-                </p>
-                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
-                        2-4 hours/week
-                    </span>
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
-                        5 spots available
-                    </span>
-                </div>
-                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-1')">
-                    Learn More
-                </button>
-            </div>
-            
-            <div class="feature-card opportunity-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                    <span class="badge badge-warning">Food Security</span>
-                    <span class="badge badge-primary">Weekly</span>
-                </div>
-                <h3 class="feature-title">Food Bank Distribution</h3>
-                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
-                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
-                    Your Local Food Bank
-                </p>
-                <p class="feature-desc">
-                    Sort donations and assist with food distribution to families in need.
-                    No experience necessary.
-                </p>
-                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
-                        3-4 hours/shift
-                    </span>
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
-                        10 spots available
-                    </span>
-                </div>
-                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-2')">
-                    Learn More
-                </button>
-            </div>
-            
-            <div class="feature-card opportunity-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                    <span class="badge badge-danger">Environment</span>
-                    <span class="badge badge-warning">One-time</span>
-                </div>
-                <h3 class="feature-title">Park Cleanup Day</h3>
-                <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
-                    <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span>
-                    Your Local Park
-                </p>
-                <p class="feature-desc">
-                    Join us for a community park cleanup event.
-                    Great for families and groups!
-                </p>
-                <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
-                        3 hours
-                    </span>
-                    <span style="font-size: 12px; color: var(--gray-500);">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle;">groups</span>
-                        No limit
-                    </span>
-                </div>
-                <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('example-3')">
-                    Learn More
-                </button>
-            </div>
-        </div>
-        
-        <!-- How to Find Real Opportunities -->
-        <div class="card" style="margin-top: 32px;">
-            <div class="card-header">
-                <h2 class="card-title">How to Find Real Opportunities</h2>
-            </div>
-            <div class="card-body">
-                <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                    <div>
-                        <h4 style="margin-bottom: 8px;">
-                            <span class="material-icons" style="vertical-align: middle; color: var(--primary);">search</span>
-                            Search Online
-                        </h4>
-                        <p style="color: var(--gray-600); font-size: 14px;">
-                            Visit VolunteerMatch.org, Idealist.org, or your local United Way website.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 style="margin-bottom: 8px;">
-                            <span class="material-icons" style="vertical-align: middle; color: var(--secondary);">business</span>
-                            Contact Local Nonprofits
-                        </h4>
-                        <p style="color: var(--gray-600); font-size: 14px;">
-                            Reach out directly to organizations you're interested in supporting.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 style="margin-bottom: 8px;">
-                            <span class="material-icons" style="vertical-align: middle; color: var(--accent);">school</span>
-                            Check Schools & Libraries
-                        </h4>
-                        <p style="color: var(--gray-600); font-size: 14px;">
-                            Local schools and libraries often have volunteer programs.
-                        </p>
-                    </div>
-                </div>
+        <div class="card-body">
+            <p style="margin-bottom: 16px;">These trusted platforms have thousands more volunteer opportunities:</p>
+            <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <a href="https://www.volunteermatch.org" target="_blank" class="external-link-card">
+                    <strong>VolunteerMatch</strong>
+                    <span>Largest volunteer database</span>
+                </a>
+                <a href="https://www.idealist.org" target="_blank" class="external-link-card">
+                    <strong>Idealist</strong>
+                    <span>Nonprofit jobs & volunteering</span>
+                </a>
+                <a href="https://www.habitat.org/volunteer" target="_blank" class="external-link-card">
+                    <strong>Habitat for Humanity</strong>
+                    <span>Home building projects</span>
+                </a>
+                <a href="https://www.redcross.org/volunteer" target="_blank" class="external-link-card">
+                    <strong>American Red Cross</strong>
+                    <span>Disaster relief & more</span>
+                </a>
             </div>
         </div>
     </div>
@@ -210,10 +145,10 @@ description: Find and browse volunteer opportunities in your community
 
 <!-- Opportunity Details Modal -->
 <div class="modal-overlay" id="opportunityModal">
-    <div class="modal" style="max-width: 600px;">
+    <div class="modal" style="max-width: 700px;">
         <div class="modal-header">
             <h2 class="modal-title" id="modalTitle">Opportunity Details</h2>
-            <button class="modal-close" onclick="closeModal('opportunityModal')">
+            <button class="modal-close" onclick="closeModal()">
                 <span class="material-icons">close</span>
             </button>
         </div>
@@ -221,78 +156,448 @@ description: Find and browse volunteer opportunities in your community
             <!-- Content loaded dynamically -->
         </div>
         <div class="modal-footer">
-            <button class="btn btn-outline" onclick="closeModal('opportunityModal')">Close</button>
-            <button class="btn btn-primary" onclick="applyToOpportunity()">
-                <span class="material-icons">send</span>
-                Express Interest
-            </button>
+            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+            <a href="#" class="btn btn-primary" id="applyBtn" target="_blank">
+                <span class="material-icons">open_in_new</span>
+                View on Source Site
+            </a>
         </div>
     </div>
 </div>
 
+<style>
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.recommendation-card {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.recommendation-card:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+}
+
+.recommendation-score {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--secondary);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.opportunity-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.opportunity-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.external-link-card {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-fast);
+}
+
+.external-link-card:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.external-link-card strong {
+    color: var(--primary);
+}
+
+.external-link-card span {
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.match-reasons {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.match-reasons li {
+    margin-bottom: 4px;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+
 <script>
-function searchOpportunities() {
-    const search = document.getElementById('searchOpportunities').value;
-    const category = document.getElementById('categoryFilter').value;
+let allOpportunities = [];
+let userProfile = null;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check authentication
+    if (!isAuthenticated()) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('profileRequired').classList.remove('hidden');
+        document.getElementById('profileRequired').querySelector('h2').textContent = 'Sign In Required';
+        document.getElementById('profileRequired').querySelector('p').textContent = 'Please sign in to browse volunteer opportunities.';
+        document.getElementById('profileRequired').querySelector('a').href = '{{ "/" | relative_url }}';
+        document.getElementById('profileRequired').querySelector('a').innerHTML = '<span class="material-icons">login</span> Sign In';
+        return;
+    }
+    
+    // Check profile completion
+    userProfile = JSON.parse(localStorage.getItem('volunteerProfile') || 'null');
+    if (!userProfile || !userProfile.profile_complete) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('profileRequired').classList.remove('hidden');
+        return;
+    }
+    
+    // Load opportunities
+    await loadOpportunities();
+});
+
+async function loadOpportunities() {
+    try {
+        const response = await fetch('{{ "/data/opportunities.json" | relative_url }}');
+        const data = await response.json();
+        allOpportunities = data.opportunities;
+        
+        document.getElementById('loadingState').classList.add('hidden');
+        
+        // Show recommendations if profile is complete
+        if (userProfile && userProfile.profile_complete) {
+            generateRecommendations();
+            document.getElementById('recommendationsSection').classList.remove('hidden');
+        }
+        
+        renderOpportunities(allOpportunities);
+    } catch (error) {
+        console.error('Error loading opportunities:', error);
+        document.getElementById('loadingState').innerHTML = `
+            <span class="material-icons" style="font-size: 48px; color: var(--danger);">error</span>
+            <p style="margin-top: 16px;">Error loading opportunities. Please refresh the page.</p>
+        `;
+    }
+}
+
+function generateRecommendations() {
+    if (!userProfile || !allOpportunities.length) return;
+    
+    const userCauses = userProfile.causes_interested || [];
+    const userSkills = (userProfile.skills || []).map(s => s.name || s);
+    const userPopulations = userProfile.populations_interested || [];
+    const userHours = parseInt(userProfile.availability_hours_per_week) || 5;
+    const prefersVirtual = userProfile.prefers_virtual || false;
+    
+    // Score each opportunity
+    const scored = allOpportunities.map(opp => {
+        let score = 0;
+        let reasons = [];
+        
+        // Cause match (40 points max)
+        const causeMatches = opp.cause_areas.filter(c => userCauses.includes(c));
+        if (causeMatches.length > 0) {
+            score += Math.min(causeMatches.length * 20, 40);
+            reasons.push(`Matches your interest in ${causeMatches.join(', ')}`);
+        }
+        
+        // Skill match (30 points max)
+        const skillMatches = opp.skills_needed.filter(s => 
+            userSkills.some(us => us.toLowerCase().includes(s.toLowerCase()) || 
+                           s.toLowerCase().includes(us.toLowerCase()))
+        );
+        if (skillMatches.length > 0) {
+            score += Math.min(skillMatches.length * 15, 30);
+            reasons.push(`Uses your skills: ${skillMatches.slice(0,2).join(', ')}`);
+        }
+        
+        // Hours fit (15 points)
+        if (opp.hours_per_week_max === 0 || opp.hours_per_week_max <= userHours) {
+            score += 15;
+        } else if (opp.hours_per_week_min <= userHours) {
+            score += 10;
+        }
+        
+        // Virtual preference (10 points)
+        if (prefersVirtual && opp.is_virtual) {
+            score += 10;
+            reasons.push('Remote opportunity');
+        }
+        
+        // Population match (5 points)
+        const popMatches = opp.populations_served.filter(p => userPopulations.includes(p));
+        if (popMatches.length > 0) {
+            score += 5;
+        }
+        
+        return { opportunity: opp, score, reasons };
+    });
+    
+    // Sort by score and take top 3
+    scored.sort((a, b) => b.score - a.score);
+    const recommendations = scored.slice(0, 3).filter(r => r.score >= 25);
+    
+    // Render recommendations
+    const container = document.getElementById('recommendationsList');
+    if (recommendations.length === 0) {
+        container.innerHTML = '<p style="opacity: 0.8;">Complete more of your profile to get better recommendations!</p>';
+        return;
+    }
+    
+    container.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-card" onclick="showOpportunityDetails('${rec.opportunity.id}')">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span class="recommendation-score">${rec.score}% match</span>
+                ${rec.opportunity.is_virtual ? '<span class="badge" style="background: rgba(255,255,255,0.2);">Remote</span>' : ''}
+            </div>
+            <h4 style="margin-bottom: 4px;">${rec.opportunity.title}</h4>
+            <p style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">${rec.opportunity.organization}</p>
+            <ul class="match-reasons">
+                ${rec.reasons.slice(0, 2).map(r => `<li>✓ ${r}</li>`).join('')}
+            </ul>
+        </div>
+    `).join('');
+}
+
+function renderOpportunities(opportunities) {
+    const container = document.getElementById('opportunitiesList');
+    const countEl = document.getElementById('resultsCount');
+    const emptyState = document.getElementById('emptyState');
+    
+    countEl.textContent = `Showing ${opportunities.length} opportunities`;
+    
+    if (opportunities.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    
+    emptyState.classList.add('hidden');
+    
+    container.innerHTML = opportunities.map(opp => `
+        <div class="feature-card opportunity-card">
+            <div class="opportunity-badges">
+                ${opp.cause_areas.slice(0, 2).map(c => 
+                    `<span class="badge badge-primary">${formatCause(c)}</span>`
+                ).join('')}
+                <span class="badge ${getCommitmentBadgeClass(opp.commitment_type)}">${formatCommitment(opp.commitment_type)}</span>
+                ${opp.is_virtual ? '<span class="badge badge-info">Remote</span>' : ''}
+            </div>
+            <h3 class="feature-title">${opp.title}</h3>
+            <p style="color: var(--gray-600); font-size: 14px; margin-bottom: 8px;">
+                <span class="material-icons" style="font-size: 16px; vertical-align: middle;">business</span>
+                ${opp.organization}
+            </p>
+            <p class="feature-desc">${truncate(opp.description, 120)}</p>
+            <div style="margin-top: auto; padding-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--gray-500);">
+                <span>
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle;">schedule</span>
+                    ${formatHours(opp)}
+                </span>
+                ${opp.training_provided ? '<span title="Training Provided"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">school</span> Training</span>' : ''}
+            </div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 16px;" onclick="showOpportunityDetails('${opp.id}')">
+                Learn More
+            </button>
+        </div>
+    `).join('');
+}
+
+function filterOpportunities() {
+    const search = document.getElementById('searchOpportunities').value.toLowerCase();
+    const cause = document.getElementById('causeFilter').value;
     const commitment = document.getElementById('commitmentFilter').value;
+    const virtual = document.getElementById('virtualFilter').value;
     
-    // In production, this would filter/fetch real opportunities
-    console.log('Searching:', { search, category, commitment });
+    let filtered = allOpportunities.filter(opp => {
+        // Search filter
+        if (search) {
+            const searchable = `${opp.title} ${opp.organization} ${opp.description}`.toLowerCase();
+            if (!searchable.includes(search)) return false;
+        }
+        
+        // Cause filter
+        if (cause && !opp.cause_areas.includes(cause)) return false;
+        
+        // Commitment filter
+        if (commitment && opp.commitment_type !== commitment) return false;
+        
+        // Virtual filter
+        if (virtual === 'virtual' && !opp.is_virtual) return false;
+        if (virtual === 'in_person' && opp.is_virtual) return false;
+        
+        return true;
+    });
     
-    // Show feedback
-    alert('Search functionality will connect to real opportunity databases. For now, browse the example listings or visit VolunteerMatch.org');
+    renderOpportunities(filtered);
+}
+
+function clearFilters() {
+    document.getElementById('searchOpportunities').value = '';
+    document.getElementById('causeFilter').value = '';
+    document.getElementById('commitmentFilter').value = '';
+    document.getElementById('virtualFilter').value = '';
+    renderOpportunities(allOpportunities);
 }
 
 function showOpportunityDetails(id) {
-    const modal = document.getElementById('opportunityModal');
-    const modalBody = document.getElementById('modalBody');
+    const opp = allOpportunities.find(o => o.id === id);
+    if (!opp) return;
     
-    modalBody.innerHTML = `
-        <div class="alert alert-info" style="margin-bottom: 16px;">
-            <span class="material-icons">info</span>
-            <span>This is an example listing to show the format. Connect with real organizations to apply.</span>
+    document.getElementById('modalTitle').textContent = opp.title;
+    document.getElementById('applyBtn').href = opp.organization_url || opp.source_url;
+    
+    document.getElementById('modalBody').innerHTML = `
+        <div style="margin-bottom: 16px;">
+            <span class="badge badge-primary">${formatCause(opp.cause_areas[0])}</span>
+            <span class="badge ${getCommitmentBadgeClass(opp.commitment_type)}">${formatCommitment(opp.commitment_type)}</span>
+            ${opp.is_virtual ? '<span class="badge badge-info">Remote</span>' : '<span class="badge">In-Person</span>'}
         </div>
-        <p>To find real volunteer opportunities:</p>
-        <ul style="margin: 16px 0; padding-left: 20px;">
-            <li>Visit <a href="https://www.volunteermatch.org" target="_blank">VolunteerMatch.org</a></li>
-            <li>Check <a href="https://www.idealist.org" target="_blank">Idealist.org</a></li>
-            <li>Contact local nonprofits directly</li>
-            <li>Ask at your school, workplace, or place of worship</li>
-        </ul>
-        <p style="color: var(--gray-600);">Once you find an opportunity, use our AI Assistant to help write your application!</p>
+        
+        <h4 style="color: var(--gray-600); margin-bottom: 16px;">
+            <span class="material-icons" style="vertical-align: middle;">business</span>
+            ${opp.organization}
+        </h4>
+        
+        <p style="margin-bottom: 24px; line-height: 1.7;">${opp.description}</p>
+        
+        ${opp.requirements ? `
+            <div style="margin-bottom: 16px;">
+                <strong>Requirements:</strong>
+                <p style="color: var(--gray-600);">${opp.requirements}</p>
+            </div>
+        ` : ''}
+        
+        <div class="info-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div>
+                <strong>Time Commitment</strong>
+                <p style="color: var(--gray-600);">${formatHours(opp)}</p>
+            </div>
+            <div>
+                <strong>Location</strong>
+                <p style="color: var(--gray-600);">${opp.is_virtual ? 'Remote/Virtual' : `${opp.location_city}, ${opp.location_state}`}</p>
+            </div>
+            <div>
+                <strong>Skills Needed</strong>
+                <p style="color: var(--gray-600);">${opp.skills_needed.join(', ')}</p>
+            </div>
+            <div>
+                <strong>Serves</strong>
+                <p style="color: var(--gray-600);">${opp.populations_served.map(p => formatPopulation(p)).join(', ')}</p>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            ${opp.training_provided ? '<span class="badge badge-success">✓ Training Provided</span>' : ''}
+            ${opp.background_check_required ? '<span class="badge badge-warning">Background Check Required</span>' : ''}
+            ${opp.min_age > 0 ? `<span class="badge">Min Age: ${opp.min_age}+</span>` : ''}
+        </div>
+        
+        <div class="alert alert-info" style="margin-top: 24px;">
+            <span class="material-icons">info</span>
+            <div>
+                <strong>How to Apply</strong>
+                <p style="margin: 0;">Click "View on Source Site" to apply directly with ${opp.organization}. Use our <a href="{{ '/ai-assistant.html' | relative_url }}">AI Assistant</a> to help write your application!</p>
+            </div>
+        </div>
     `;
     
-    modal.classList.add('active');
+    document.getElementById('opportunityModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-function applyToOpportunity() {
-    if (isAuthenticated()) {
-        window.location.href = '{{ "/ai-assistant" | relative_url }}?action=application';
-    } else {
-        signInWithGoogle();
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('active');
+function closeModal() {
+    document.getElementById('opportunityModal').classList.remove('active');
     document.body.style.overflow = '';
 }
 
-// Update UI based on auth state
-window.addEventListener('userSignedIn', function(e) {
-    document.getElementById('gettingStartedCard').style.display = 'none';
-});
+// Utility functions
+function formatCause(cause) {
+    const map = {
+        'education': 'Education',
+        'environment': 'Environment',
+        'health': 'Health',
+        'hunger': 'Food Security',
+        'housing': 'Housing',
+        'animals': 'Animals',
+        'seniors': 'Seniors',
+        'youth': 'Youth',
+        'community': 'Community',
+        'disaster': 'Disaster Relief',
+        'mental_health': 'Mental Health',
+        'immigrants': 'Immigrants',
+        'poverty': 'Poverty',
+    };
+    return map[cause] || cause;
+}
 
-window.addEventListener('userSignedOut', function() {
-    document.getElementById('gettingStartedCard').style.display = 'block';
-});
+function formatCommitment(type) {
+    const map = {
+        'one_time': 'One-time',
+        'recurring': 'Recurring',
+        'ongoing': 'Ongoing',
+        'seasonal': 'Seasonal',
+    };
+    return map[type] || type;
+}
 
-// Check initial state
-document.addEventListener('DOMContentLoaded', function() {
-    if (isAuthenticated()) {
-        document.getElementById('gettingStartedCard').style.display = 'none';
+function getCommitmentBadgeClass(type) {
+    const map = {
+        'one_time': 'badge-warning',
+        'recurring': 'badge-primary',
+        'ongoing': 'badge-success',
+    };
+    return map[type] || '';
+}
+
+function formatHours(opp) {
+    if (opp.hours_per_week_max === 0) return 'Flexible';
+    if (opp.hours_per_week_min === opp.hours_per_week_max) {
+        return `${opp.hours_per_week_min} hrs/week`;
     }
+    return `${opp.hours_per_week_min}-${opp.hours_per_week_max} hrs/week`;
+}
+
+function formatPopulation(pop) {
+    const map = {
+        'children': 'Children',
+        'teens': 'Teens',
+        'adults': 'Adults',
+        'seniors': 'Seniors',
+        'families': 'Families',
+        'general': 'General Public',
+        'animals': 'Animals',
+        'immigrants': 'Immigrants',
+    };
+    return map[pop] || pop;
+}
+
+function truncate(str, len) {
+    if (str.length <= len) return str;
+    return str.substring(0, len) + '...';
+}
+
+// Close modal on escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
 });
 </script>

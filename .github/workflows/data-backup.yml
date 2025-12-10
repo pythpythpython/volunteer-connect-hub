@@ -1,0 +1,75 @@
+# VolunteerConnect Hub - Data Backup to GitHub
+# =============================================
+# Backs up Supabase data to GitHub repo for redundancy
+
+name: Data Backup
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js
+      
+      - name: Backup opportunities data
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          node << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+          
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_KEY
+          );
+          
+          async function backup() {
+            // Backup opportunities (public data)
+            const { data: opportunities, error } = await supabase
+              .from('opportunities')
+              .select('*')
+              .eq('is_active', true);
+            
+            if (error) {
+              console.error('Error fetching opportunities:', error);
+              return;
+            }
+            
+            const backup = {
+              lastUpdated: new Date().toISOString(),
+              count: opportunities.length,
+              opportunities
+            };
+            
+            fs.writeFileSync('data/opportunities.json', JSON.stringify(backup, null, 2));
+            console.log(`Backed up ${opportunities.length} opportunities`);
+          }
+          
+          backup().catch(console.error);
+          EOF
+        continue-on-error: true
+      
+      - name: Commit backup
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/
+          git diff --staged --quiet || git commit -m "Automated data backup [$(date -u +%Y-%m-%d)]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

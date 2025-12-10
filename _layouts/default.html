@@ -13,9 +13,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
     
-    <!-- Firebase for Auth -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     {% seo %}
 </head>
@@ -103,6 +102,7 @@
 
     <!-- Scripts -->
     <script src="{{ '/assets/js/app.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/database.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/auth.js' | relative_url }}"></script>
     
     <script>
