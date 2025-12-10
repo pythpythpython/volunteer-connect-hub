@@ -4,6 +4,8 @@
 -- 
 -- IMPORTANT: Run this ENTIRE script at once. Tables are ordered correctly
 -- to handle foreign key dependencies.
+--
+-- This script is IDEMPOTENT - safe to run multiple times without errors.
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -254,8 +256,32 @@ ALTER TABLE public.opportunities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recommendations ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- STEP 5: Create RLS Policies
+-- STEP 5: Create RLS Policies (Drop existing first for idempotency)
 -- ============================================
+
+-- Drop existing policies first (makes script safe to re-run)
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own hours" ON public.hours_log;
+DROP POLICY IF EXISTS "Users can insert own hours" ON public.hours_log;
+DROP POLICY IF EXISTS "Users can update own hours" ON public.hours_log;
+DROP POLICY IF EXISTS "Users can delete own hours" ON public.hours_log;
+DROP POLICY IF EXISTS "Users can view own events" ON public.events;
+DROP POLICY IF EXISTS "Users can insert own events" ON public.events;
+DROP POLICY IF EXISTS "Users can update own events" ON public.events;
+DROP POLICY IF EXISTS "Users can delete own events" ON public.events;
+DROP POLICY IF EXISTS "Users can view own letters" ON public.letters;
+DROP POLICY IF EXISTS "Users can insert own letters" ON public.letters;
+DROP POLICY IF EXISTS "Users can update own letters" ON public.letters;
+DROP POLICY IF EXISTS "Users can delete own letters" ON public.letters;
+DROP POLICY IF EXISTS "Users can view own applications" ON public.applications;
+DROP POLICY IF EXISTS "Users can insert own applications" ON public.applications;
+DROP POLICY IF EXISTS "Users can update own applications" ON public.applications;
+DROP POLICY IF EXISTS "Users can delete own applications" ON public.applications;
+DROP POLICY IF EXISTS "Anyone can view active opportunities" ON public.opportunities;
+DROP POLICY IF EXISTS "Users can view own recommendations" ON public.recommendations;
+DROP POLICY IF EXISTS "Users can update own recommendations" ON public.recommendations;
 
 -- Profiles: Users can only read/write their own profile
 CREATE POLICY "Users can view own profile" ON public.profiles
@@ -344,7 +370,14 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Triggers for updated_at
+-- Triggers for updated_at (drop existing first for idempotency)
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
+DROP TRIGGER IF EXISTS update_hours_log_updated_at ON public.hours_log;
+DROP TRIGGER IF EXISTS update_events_updated_at ON public.events;
+DROP TRIGGER IF EXISTS update_letters_updated_at ON public.letters;
+DROP TRIGGER IF EXISTS update_applications_updated_at ON public.applications;
+DROP TRIGGER IF EXISTS update_opportunities_updated_at ON public.opportunities;
+
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_hours_log_updated_at BEFORE UPDATE ON public.hours_log
