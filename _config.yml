@@ -1,0 +1,104 @@
+# Volunteering Hub Configuration
+# ==============================
+# A comprehensive volunteering planning, outreach, vetting, coordinating,
+# organizing and archiving hub for students, professionals, families, and philanthropists
+
+title: VolunteerConnect Hub
+description: AI-Powered Volunteering Planning, Outreach, Vetting, Coordinating, Organizing and Archiving Hub
+author: VolunteerConnect AGI Team
+email: pyth.pyth.python@gmail.com
+
+# GitHub Pages settings
+baseurl: "/volunteer-connect-hub"
+url: "https://pythpythpython.github.io"
+
+# Build settings
+theme: null
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Collections
+collections:
+  modules:
+    output: true
+    permalink: /modules/:name/
+  docs:
+    output: true
+    permalink: /docs/:name/
+  agi_profiles:
+    output: true
+    permalink: /agi/:name/
+
+# Default values
+defaults:
+  - scope:
+      path: ""
+      type: "modules"
+    values:
+      layout: "module"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "doc"
+
+# Markdown processing
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .git
+  - .github
+  - "*.py"
+  - "*.pyc"
+  - __pycache__
+  - tests/
+  - training/
+
+# Include in build
+include:
+  - _data
+  - assets
+
+# AGI Configuration
+agi_config:
+  quality_target: 1.0
+  boards:
+    - volunteer_planning
+    - volunteer_outreach
+    - volunteer_vetting
+    - volunteer_coordination
+    - volunteer_organizing
+    - volunteer_archiving
+    - ai_communication
+    - calendar_integration
+
+# Feature flags
+features:
+  google_auth: true
+  calendar_integration: true
+  email_notifications: true
+  slack_integration: true
+  ai_letter_writing: true
+  form_autofill: true
+  screenshot_processing: true
+  volunteer_tracking: true
+  hours_logging: true
+  opportunity_search: true
+
+# API endpoints (for GitHub Actions automation)
+apis:
+  cursor_api_enabled: true
+  github_actions_enabled: true
+  periodic_updates: true
+  update_frequency: "daily"

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <title>{{ page.title | default: site.title }}</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+    
+    <!-- Firebase for Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
+    {% seo %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ '/' | relative_url }}" class="nav-brand">
+                <span class="material-icons">volunteer_activism</span>
+                <span>VolunteerConnect</span>
+            </a>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
+                <a href="{{ '/opportunities' | relative_url }}" class="nav-link">Opportunities</a>
+                <a href="{{ '/schedule' | relative_url }}" class="nav-link">My Schedule</a>
+                <a href="{{ '/tracking' | relative_url }}" class="nav-link">Track Hours</a>
+                <a href="{{ '/ai-assistant' | relative_url }}" class="nav-link">AI Assistant</a>
+                <a href="{{ '/docs/' | relative_url }}" class="nav-link">Docs</a>
+            </div>
+            
+            <div class="nav-auth" id="authContainer">
+                <button class="btn btn-outline" id="loginBtn" onclick="signInWithGoogle()">
+                    <span class="material-icons">login</span>
+                    Sign In
+                </button>
+                <div class="user-menu hidden" id="userMenu">
+                    <img src="" alt="User" id="userAvatar" class="user-avatar">
+                    <span id="userName"></span>
+                    <button class="btn btn-text" onclick="signOut()">Sign Out</button>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {{ content }}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>VolunteerConnect Hub</h3>
+                <p>AI-powered volunteering platform for students, professionals, families, and philanthropists.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ '/opportunities' | relative_url }}">Find Opportunities</a></li>
+                    <li><a href="{{ '/schedule' | relative_url }}">My Schedule</a></li>
+                    <li><a href="{{ '/tracking' | relative_url }}">Track Hours</a></li>
+                    <li><a href="{{ '/ai-assistant' | relative_url }}">AI Assistant</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="{{ '/modules/letter-writer' | relative_url }}">AI Letter Writer</a></li>
+                    <li><a href="{{ '/modules/form-filler' | relative_url }}">Smart Form Filler</a></li>
+                    <li><a href="{{ '/modules/calendar' | relative_url }}">Calendar Integration</a></li>
+                    <li><a href="{{ '/modules/outreach' | relative_url }}">Outreach Tools</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="{{ '/docs/' | relative_url }}">Documentation</a></li>
+                    <li><a href="{{ '/docs/training' | relative_url }}">Training Guides</a></li>
+                    <li><a href="{{ '/docs/api' | relative_url }}">API Reference</a></li>
+                    <li><a href="https://github.com/pythpythpython/volunteer-connect-hub" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {{ 'now' | date: "%Y" }} VolunteerConnect Hub. Built with AI-powered AGI boards.</p>
+            <p class="footer-agi">Powered by: PlanVoice-G4, HarmonyJust-G4, VirtueArchive-G4, LinguaChart-G4, RetainGood-G4, UniteSee-G4</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ '/assets/js/app.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/auth.js' | relative_url }}"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+# VolunteerConnect Hub - Cursor API Integration
+# =============================================
+# Automatically requests improvements via Cursor API
+
+name: Cursor API Integration
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to send to Cursor'
+        required: true
+        type: string
+      module:
+        description: 'Module to improve'
+        required: false
+        type: string
+
+env:
+  CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+
+jobs:
+  process-improvement-request:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'enhancement') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install requests
+      
+      - name: Generate Cursor Prompt
+        id: generate-prompt
+        run: |
+          python -c "
+          import json
+          import os
+          
+          # Base prompt template for volunteering hub improvements
+          base_prompt = '''
+          You are improving the VolunteerConnect Hub, an AI-powered volunteering platform.
+          
+          Context:
+          - This is a Jekyll site hosted on GitHub Pages
+          - Uses AGI boards for different volunteering functions
+          - Target: 100% quality across all features
+          - Users: students, professionals, families, philanthropists
+          
+          Current AGI Boards:
+          - volunteer_planning: Schedule and event planning
+          - volunteer_outreach: Reaching potential volunteers
+          - volunteer_vetting: Screening volunteers
+          - volunteer_coordination: Real-time coordination
+          - volunteer_organizing: Program organization
+          - volunteer_archiving: Recording activities
+          - ai_communication: Letter/email writing
+          - calendar_integration: Calendar sync
+          
+          Requirements:
+          1. Maintain 100% quality standards
+          2. Include comprehensive documentation
+          3. Write tests for all new features
+          4. Follow existing code patterns
+          5. Update README.md with changes
+          
+          Task: {task}
+          Module: {module}
+          '''
+          
+          task = os.environ.get('INPUT_TASK', 'General improvement')
+          module = os.environ.get('INPUT_MODULE', 'all')
+          
+          prompt = base_prompt.format(task=task, module=module)
+          
+          # Save prompt for use
+          with open('cursor_prompt.txt', 'w') as f:
+              f.write(prompt)
+          
+          print('Prompt generated successfully')
+          "
+        env:
+          INPUT_TASK: ${{ github.event.inputs.task || github.event.issue.title }}
+          INPUT_MODULE: ${{ github.event.inputs.module || 'auto-detect' }}
+      
+      - name: Call Cursor API
+        if: env.CURSOR_API_KEY != ''
+        run: |
+          python -c "
+          import requests
+          import os
+          import json
+          
+          api_key = os.environ.get('CURSOR_API_KEY')
+          
+          if not api_key or api_key == '':
+              print('Cursor API key not configured')
+              exit(0)
+          
+          with open('cursor_prompt.txt') as f:
+              prompt = f.read()
+          
+          # Note: This is a placeholder - actual Cursor API integration
+          # would require their specific endpoint and format
+          print('Cursor API integration configured')
+          print('Prompt ready for processing')
+          
+          # Log the request for manual review
+          with open('cursor_request_log.json', 'w') as f:
+              json.dump({
+                  'timestamp': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
+                  'prompt_length': len(prompt),
+                  'status': 'pending_implementation'
+              }, f, indent=2)
+          "
+      
+      - name: Create improvement branch
+        if: env.CURSOR_API_KEY != ''
+        run: |
+          echo "Would create improvement branch for automated updates"
+          # git checkout -b improvement/$(date +%Y%m%d-%H%M%S)
