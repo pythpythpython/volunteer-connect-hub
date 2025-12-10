@@ -54,9 +54,12 @@ This guide walks you through setting up Supabase for production use with Volunte
 
 1. Go to **SQL Editor**
 2. Click **"New query"**
-3. Copy the entire contents of `agi_boards/database_board.py` → `SCHEMA_SQL` variable
+3. Copy the entire contents of **`supabase_schema.sql`** (in the repo root)
 4. Paste and run the SQL
 5. Verify tables were created in **Table Editor**
+
+> **IMPORTANT**: Use `supabase_schema.sql`, NOT the SQL from `database_board.py`. 
+> The schema file has tables in the correct order to handle foreign key dependencies.
 
 The schema creates these tables:
 - `profiles` - User profile data (linked to auth.users)
