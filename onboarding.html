@@ -973,9 +973,22 @@ document.getElementById('onboardingForm').addEventListener('submit', async funct
     // Mark profile as complete
     profile.profile_complete = true;
     
+    // Convert numeric strings
+    if (profile.availability_hours_per_week) {
+        profile.availability_hours_per_week = parseInt(profile.availability_hours_per_week);
+    }
+    if (profile.willing_to_travel_miles) {
+        profile.willing_to_travel_miles = parseInt(profile.willing_to_travel_miles);
+    }
+    if (profile.total_volunteer_hours) {
+        profile.total_volunteer_hours = parseFloat(profile.total_volunteer_hours) || 0;
+    }
+    if (profile.volunteer_since_year) {
+        profile.volunteer_since_year = parseInt(profile.volunteer_since_year) || null;
+    }
+    
     // Save profile
     try {
-        // For now, save to localStorage (will be Supabase in production)
         const user = getCurrentUser();
         const fullProfile = {
             ...profile,
@@ -984,13 +997,52 @@ document.getElementById('onboardingForm').addEventListener('submit', async funct
             updated_at: new Date().toISOString()
         };
         
+        // Try to save to Supabase first
+        if (typeof VolunteerDB !== 'undefined' && VolunteerDB.isAvailable()) {
+            console.log('Saving profile to Supabase...');
+            await VolunteerDB.updateProfile(fullProfile);
+            console.log('Profile saved to Supabase successfully');
+        }
+        
+        // Always save to localStorage as backup
         localStorage.setItem('volunteerProfile', JSON.stringify(fullProfile));
         
-        alert('Profile saved successfully!');
-        window.location.href = '{{ "/opportunities.html" | relative_url }}';
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'alert alert-success';
+        successMessage.innerHTML = `
+            <span class="material-icons">check_circle</span>
+            <div>
+                <strong>Profile Saved Successfully!</strong>
+                <p style="margin: 0;">Redirecting to opportunities...</p>
+            </div>
+        `;
+        document.querySelector('.card-body').prepend(successMessage);
+        
+        // Redirect after short delay
+        setTimeout(() => {
+            window.location.href = '{{ "/opportunities.html" | relative_url }}';
+        }, 1500);
     } catch (error) {
         console.error('Error saving profile:', error);
-        alert('Error saving profile. Please try again.');
+        
+        // Try localStorage fallback
+        try {
+            const user = getCurrentUser();
+            const fullProfile = {
+                ...profile,
+                user_id: user?.uid || 'local',
+                email: user?.email || '',
+                updated_at: new Date().toISOString()
+            };
+            localStorage.setItem('volunteerProfile', JSON.stringify(fullProfile));
+            
+            alert('Profile saved locally. Some features may be limited offline.');
+            window.location.href = '{{ "/opportunities.html" | relative_url }}';
+        } catch (localError) {
+            console.error('Error saving to localStorage:', localError);
+            alert('Error saving profile. Please try again.');
+        }
     }
 });
 </script>

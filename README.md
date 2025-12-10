@@ -4,6 +4,10 @@
 
 🔗 **Live Site**: [https://pythpythpython.github.io/volunteer-connect-hub/](https://pythpythpython.github.io/volunteer-connect-hub/)
 
+🔒 **Production Status**: Connected to Supabase backend
+
+📊 **Opportunities**: 40+ curated volunteer listings from 10+ organizations
+
 ---
 
 ## Overview
@@ -87,8 +91,14 @@ volunteer-connect-hub/
 │   ├── css/           # Stylesheets
 │   └── js/            # JavaScript (auth, database, app)
 ├── data/
-│   └── opportunities.json  # Volunteer opportunities data
+│   └── opportunities.json  # 40+ curated opportunities
+├── scripts/            # Automation scripts
+│   ├── crawl_opportunities.py
+│   ├── update_opportunities_db.py
+│   ├── generate_recommendations.py
+│   └── volunteermatch_api.py
 ├── agi_boards/         # AGI Board implementations
+│   ├── boards_config.json
 │   ├── user_profile_board.py
 │   ├── database_board.py
 │   ├── opportunity_crawler_board.py
@@ -97,6 +107,7 @@ volunteer-connect-hub/
 │   └── ux_testing_board.py
 ├── .github/workflows/  # GitHub Actions
 │   ├── deploy.yml
+│   ├── opportunity-crawler.yml
 │   ├── ux-testing.yml
 │   └── data-backup.yml
 ├── index.html          # Home page
@@ -106,6 +117,8 @@ volunteer-connect-hub/
 ├── ai-assistant.html   # AI tools
 ├── onboarding.html     # Profile questionnaire
 ├── docs/               # Documentation
+├── supabase_schema.sql # Database schema
+├── SUPABASE_SETUP.md   # Setup guide
 ├── _config.yml         # Jekyll configuration
 └── README.md
 ```
@@ -150,16 +163,28 @@ This data is used to:
 
 ## Opportunity Sources
 
-Real volunteer opportunities are aggregated from:
+40+ real volunteer opportunities are aggregated from:
 
-- **VolunteerMatch** - volunteermatch.org
+- **VolunteerMatch** - volunteermatch.org (API integration available)
 - **Idealist** - idealist.org
 - **Habitat for Humanity** - habitat.org
 - **American Red Cross** - redcross.org
 - **AmeriCorps** - americorps.gov
-- **Feeding America** - feedingamerica.org
+- **Big Brothers Big Sisters** - bbbs.org
+- **Meals on Wheels** - mealsonwheelsamerica.org
+- **Special Olympics** - specialolympics.org
+- **Boys & Girls Clubs** - bgca.org
+- **United Way** - unitedway.org
+- **Crisis Text Line** - crisistextline.org
 
-Data is updated periodically via GitHub Actions.
+### Opportunity Crawler Workflow
+
+Data is updated automatically via the `opportunity-crawler.yml` GitHub Actions workflow:
+- Runs daily at 6 AM UTC
+- Can be triggered manually
+- Fetches from RSS feeds and APIs
+- Updates Supabase database
+- Generates fresh recommendations for users
 
 ---
 

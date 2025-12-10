@@ -15,8 +15,8 @@
 // ============================================
 // CONFIGURATION - Replace with your Supabase project details
 // ============================================
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';  // e.g., https://xxxxx.supabase.co
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://njnabnhnuwrzcpncdtuu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qbmFibmhudXdyemNwbmNkdHV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzMzcxODAsImV4cCI6MjA4MDkxMzE4MH0.cIw0wy3Lb4LuIBXICju_n9oxPhTqE8btr5JJCUe8HrY';
 
 // ============================================
 // DATABASE CLIENT
