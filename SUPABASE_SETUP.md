@@ -146,7 +146,43 @@ Supabase Free Tier includes:
 
 This is more than enough for most volunteer organizations. Upgrade only if you exceed these limits.
 
+## Production Deployment
+
+Once you've completed the setup:
+
+1. **Deploy to GitHub Pages**: Push to the main branch and the deploy workflow will run automatically.
+
+2. **Enable Opportunity Crawler**: The `opportunity-crawler.yml` workflow runs daily to fetch new opportunities. You can also trigger it manually.
+
+3. **Optional: VolunteerMatch API**: For live opportunity data, add `VOLUNTEERMATCH_API_KEY` to your secrets. Apply for API access at [VolunteerMatch Business](https://www.volunteermatch.org/business/).
+
+4. **Monitor Data**: Check the Supabase Table Editor to see:
+   - User profiles and activity
+   - Hours logged
+   - Scheduled events
+   - Generated letters and applications
+
+## Workflows
+
+| Workflow | Purpose | Schedule |
+|----------|---------|----------|
+| `deploy.yml` | Build and deploy Jekyll site | On push to main |
+| `opportunity-crawler.yml` | Fetch new volunteer opportunities | Daily at 6 AM UTC |
+| `data-backup.yml` | Backup user data | Weekly |
+
+## AGI Board Integration
+
+The platform uses specialized AGI boards for:
+
+- **OpportunityCrawlerAGI**: Fetches and curates opportunities from multiple sources
+- **RecommendationAGI**: Generates personalized opportunity matches
+- **UserProfileAGI**: Manages comprehensive volunteer profiles
+- **LinguaChartAGI**: Powers AI letter and email writing
+
+See `agi_boards/boards_config.json` for quality metrics and board assignments.
+
 ## Support
 
 - [Supabase Documentation](https://supabase.com/docs)
 - [VolunteerConnect Hub Issues](https://github.com/pythpythpython/volunteer-connect-hub/issues)
+- [VolunteerMatch API](https://www.volunteermatch.org/business/api/)

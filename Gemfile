@@ -7,9 +7,6 @@ source "https://rubygems.org"
 # Jekyll version
 gem "jekyll", "~> 4.3"
 
-# GitHub Pages gem for compatibility
-gem "github-pages", group: :jekyll_plugins
-
 # Jekyll plugins
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.12"

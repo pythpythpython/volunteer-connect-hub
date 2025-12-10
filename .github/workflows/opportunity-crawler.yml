@@ -1,0 +1,94 @@
+# VolunteerConnect Hub - Opportunity Crawler Workflow
+# ===================================================
+# Crawls volunteer opportunities from multiple sources and updates the database
+# Powered by AGI Board: OpportunityCrawlerAGI
+
+name: Crawl Volunteer Opportunities
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC (2 AM EST)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Source to crawl (all, volunteermatch, idealist, etc.)'
+        required: false
+        default: 'all'
+      dry_run:
+        description: 'Dry run (do not update database)'
+        required: false
+        default: 'false'
+
+jobs:
+  crawl-opportunities:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 feedparser supabase python-dotenv
+      
+      - name: Run Opportunity Crawler
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          VOLUNTEERMATCH_API_KEY: ${{ secrets.VOLUNTEERMATCH_API_KEY }}
+        run: |
+          python scripts/crawl_opportunities.py \
+            --source ${{ github.event.inputs.source || 'all' }} \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+      
+      - name: Update opportunities database
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python scripts/update_opportunities_db.py
+      
+      - name: Commit updated opportunities JSON
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action - Opportunity Crawler"
+          git add data/opportunities.json
+          git diff --staged --quiet || git commit -m "Update volunteer opportunities [automated]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  generate-recommendations:
+    needs: crawl-opportunities
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.dry_run != 'true' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install supabase python-dotenv
+      
+      - name: Generate recommendations for active users
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python scripts/generate_recommendations.py
